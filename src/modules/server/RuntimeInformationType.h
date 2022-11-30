@@ -2,25 +2,18 @@
 
 #include <QObject>
 #include <QString>
-#include "ConfigurationType.h"
+#include "Configuration.h"
 
 class RuntimeInformationType : public QObject {
 
 	Q_OBJECT
 
 	public:
-		RuntimeInformationType(
-			const QString &configurationFilename
-		);
+		RuntimeInformationType();
 
-		QString getConfigurationFilename() const;
-
-		bool loadConfiguration(QString configurationFilename = "");
+		bool loadConfiguration(const QString &configurationFilename);
 
 	private:
-		QString configurationFilename;
-		ConfigurationType configurationType;
-
-		void setConfigurationFilename(const QString &configurationFilename);
+		Configuration configuration;
 
 };

@@ -3,12 +3,11 @@
 #include <QDebug>
 #include "Server.h"
 #include "RuntimeInformationType.h"
-#include "Configuration.h"
 
 int main(int argc, char *argv[]) {
 	QCoreApplication app(argc, argv);
 
-	RuntimeInformationType rit(CONFIGURATION_FILENAME);
+	RuntimeInformationType rit;
 
 	Server server;
 	QObject::connect(

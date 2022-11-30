@@ -8,7 +8,8 @@ Server::Server(
 	parent
 ) {
 	connect(&timer, &QTimer::timeout, this, &Server::timeout);
-	timer.setInterval(1000);
+	timer.setInterval(5000);
+	timer.setSingleShot(true);
 	timer.start();
 }
 
@@ -29,4 +30,9 @@ void Server::incomingConnection(qintptr clientSocketDescriptor) {
 
 void Server::timeout() {
 	qDebug() << "Thread count:" << serverThreadManager.getCount();
+	serverThreadManager.stop();
+
+	QThread::sleep(3);
+
+	emit exit(0);
 }

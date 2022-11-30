@@ -13,7 +13,6 @@ class Server : public QTcpServer {
 		Server(QObject *parent = nullptr);
 
 		bool start();
-
 		void incomingConnection(qintptr clientSocketDescriptor) override;
 	
 	private:
@@ -23,5 +22,8 @@ class Server : public QTcpServer {
 
 	private slots:
 		void timeout();
+	
+	signals:
+		void exit(int status);
 
 };

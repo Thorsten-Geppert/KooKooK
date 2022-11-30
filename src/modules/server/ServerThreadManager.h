@@ -14,6 +14,11 @@ class ServerThreadManager : public QObject {
 
 		int getCount() const;
 
+		bool stop(
+			unsigned int *quittedThreadCount = nullptr,
+			unsigned int *terminatedThreadCount = nullptr
+		);
+
 	private:
 		ServerThreadList serverThreadList;
 		QMutex serverThreadMutex;

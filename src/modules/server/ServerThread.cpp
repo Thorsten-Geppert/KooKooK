@@ -37,6 +37,9 @@ void ServerThread::run() {
 	}
 
 	exec();
+
+	// Quit thread
+	qDebug() << "end";
 }
 
 void ServerThread::setClientSocketDescriptor(const qintptr clientSocketDescriptor) {

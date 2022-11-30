@@ -22,7 +22,7 @@ class ServerThread : public QThread {
 		void run() override;
 
 		qintptr getClientSocketDescriptor() const;
-	
+
 	private:
 		ServerThreadList &serverThreadList;
 		QMutex &serverThreadMutex;

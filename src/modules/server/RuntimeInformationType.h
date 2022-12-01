@@ -12,6 +12,12 @@ class RuntimeInformationType : public QObject {
 		RuntimeInformationType();
 
 		bool loadConfiguration(const QString &configurationFilename);
+		bool log(
+			const QString &message,
+			const bool error = false
+		);
+
+		Configuration &getConfiguration();
 
 	private:
 		Configuration configuration;

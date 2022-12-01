@@ -2,6 +2,7 @@
 
 #include <QTcpServer>
 #include "ServerThreadManager.h"
+#include "RuntimeInformationType.h"
 
 #include <QTimer>
 
@@ -10,13 +11,17 @@ class Server : public QTcpServer {
 	Q_OBJECT
 
 	public:
-		Server(QObject *parent = nullptr);
+		Server(
+			RuntimeInformationType &rit,
+			QObject *parent = nullptr
+		);
 
 		bool start();
 		void incomingConnection(qintptr clientSocketDescriptor) override;
 	
 	private:
 		ServerThreadManager serverThreadManager;
+		RuntimeInformationType &rit;
 
 		QTimer timer;
 

@@ -3,9 +3,12 @@
 #include <QDebug>
 
 Server::Server(
+	RuntimeInformationType &rit,
 	QObject *parent
 ) : QTcpServer(
 	parent
+), rit(
+	rit
 ) {
 	connect(&timer, &QTimer::timeout, this, &Server::timeout);
 	timer.setInterval(5000);
@@ -14,11 +17,14 @@ Server::Server(
 }
 
 bool Server::start() {
-	// TODO parameter configuration
-	if(!listen(QHostAddress::AnyIPv4, 12345)) {
-		qDebug() << errorString();
+	const auto hostname = rit.getConfiguration().getServer().getHostname();
+	const auto port = rit.getConfiguration().getServer().getPort();
+	if(!listen(QHostAddress(hostname), port)) {
+		rit.log(QString("Starting server error (%1:%2): %3").arg(hostname).arg(port).arg(errorString()), true);
 		return false;
 	}
+
+	rit.log(QString("Starting server ok (%1:%2)").arg(hostname).arg(port));
 
 	return true;
 }

@@ -1,4 +1,5 @@
-HEADERS +=	Server.h \
+HEADERS +=	Defaults.h \
+			Server.h \
 			ServerThread.h \
 			ServerThreadList.h \
 			ServerThreadManager.h \
@@ -7,7 +8,12 @@ HEADERS +=	Server.h \
 			\
 			lib/ConfigurationType.h \
 			lib/VariantHash.h \
-			lib/ServerConfigurationType.h
+			lib/ServerConfigurationType.h \
+			\
+			../lib/LogLibrary.h \
+			../lib/SystemLogLibrary.h \
+			../lib/TextLogLibrary.h \
+			../lib/ConsoleLogLibrary.h
 
 SOURCES += 	main.cpp \
 			Server.cpp \
@@ -19,7 +25,12 @@ SOURCES += 	main.cpp \
 			\
 			lib/ConfigurationType.cpp \
 			lib/VariantHash.cpp \
-			lib/ServerConfigurationType.cpp
+			lib/ServerConfigurationType.cpp \
+			\
+			../lib/LogLibrary.cpp \
+			../lib/SystemLogLibrary.cpp \
+			../lib/TextLogLibrary.cpp \
+			../lib/ConsoleLogLibrary.cpp
 
 QT += network
 CONFIG += console c++11

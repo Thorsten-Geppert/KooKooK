@@ -18,6 +18,7 @@ int ServerThreadManager::getCount() const {
 
 bool ServerThreadManager::create(const qintptr clientSocketDescriptor) {
 	ServerThread *serverThread = new ServerThread(
+		rit,
 		serverThreadList,
 		serverThreadMutex,
 		this
@@ -34,7 +35,7 @@ bool ServerThreadManager::create(const qintptr clientSocketDescriptor) {
 		return false;
 	}
 
-	rit.log(QString("New server thread started (Thread count: %1)").arg(getCount()), true);
+	rit.log(QString("New server thread started (Thread count: %1)").arg(getCount()));
 
 	return true;
 }

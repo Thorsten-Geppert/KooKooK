@@ -4,6 +4,7 @@
 #include <QMutex>
 #include <QPointer>
 #include <QTcpSocket>
+#include "RuntimeInformationType.h"
 
 class ServerThreadList;
 class ServerThread : public QThread {
@@ -12,6 +13,7 @@ class ServerThread : public QThread {
 
 	public:
 		ServerThread(
+			RuntimeInformationType &rit,
 			ServerThreadList &serverThreadList,
 			QMutex &serverThreadMutex,
 			QObject *parent = nullptr
@@ -28,6 +30,7 @@ class ServerThread : public QThread {
 		QMutex &serverThreadMutex;
 		qintptr clientSocketDescriptor = -1;
 		QPointer<QTcpSocket> clientSocket = nullptr;
+		RuntimeInformationType &rit;
 
 		void setClientSocketDescriptor(const qintptr clientSocketDescriptor);
 

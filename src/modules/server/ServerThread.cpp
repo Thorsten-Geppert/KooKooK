@@ -3,6 +3,7 @@
 #include "ServerThreadList.h"
 
 ServerThread::ServerThread(
+	RuntimeInformationType &rit,
 	ServerThreadList &serverThreadList,
 	QMutex &serverThreadMutex,
 	QObject *parent
@@ -12,6 +13,8 @@ ServerThread::ServerThread(
 	serverThreadList
 ), serverThreadMutex(
 	serverThreadMutex
+), rit(
+	rit
 ) {
 	QMutexLocker serverThreadMutexLocker(&serverThreadMutex);
 	serverThreadList.append(this);
@@ -22,7 +25,7 @@ bool ServerThread::initialize(const qintptr clientSocketDescriptor) {
 
 	clientSocket = new QTcpSocket;
 	if(!clientSocket->setSocketDescriptor(clientSocketDescriptor)) {
-		qDebug() << clientSocket->errorString();
+		rit.log(QString("Could not set socket descriptor: %1").arg(clientSocket->errorString()));
 
 		return false;
 	}

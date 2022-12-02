@@ -11,7 +11,7 @@ class RuntimeInformationType : public QObject {
 	public:
 		RuntimeInformationType();
 
-		bool loadConfiguration(const QString &configurationFilename);
+		Configuration::ErrorEnumeration loadConfiguration(const QString &configurationFilename);
 		bool log(
 			const QString &message,
 			const bool error = false
@@ -19,7 +19,11 @@ class RuntimeInformationType : public QObject {
 
 		Configuration &getConfiguration();
 
+		void setPid(const qint64 pid);
+		qint64 getPid() const;
+
 	private:
 		Configuration configuration;
+		qint64 pid;
 
 };

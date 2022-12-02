@@ -29,3 +29,11 @@ void ServerConfigurationType::setPort(const quint16 port) {
 quint16 ServerConfigurationType::getPort() const {
 	return port;
 }
+
+void ServerConfigurationType::setWaitSecondsAfterThreadsShutdown(const unsigned long waitSecondsAfterThreadsShutdown) {
+	this->waitSecondsAfterThreadsShutdown = waitSecondsAfterThreadsShutdown;
+}
+
+unsigned long ServerConfigurationType::getWaitSecondsAfterThreadsShutdown() const {
+	return waitSecondsAfterThreadsShutdown;
+}

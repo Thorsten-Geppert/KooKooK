@@ -17,9 +17,13 @@ class ServerConfigurationType : public ConfigurationType {
 
 		void setPort(const quint16 port);
 		quint16 getPort() const;
+		
+		void setWaitSecondsAfterThreadsShutdown(const unsigned long waitSecondsAfterThreadsShutdown);
+		unsigned long getWaitSecondsAfterThreadsShutdown() const;
 	
 	private:
 		QString hostname;
 		quint16 port;
+		unsigned long waitSecondsAfterThreadsShutdown = 5;
 
 };

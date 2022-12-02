@@ -9,7 +9,7 @@
 Configuration::Configuration() {
 }
 
-bool Configuration::load(QString configurationFilename) {
+Configuration::ErrorEnumeration Configuration::load(QString configurationFilename) {
 	if(configurationFilename.isEmpty())
 		configurationFilename = Defaults::CONFIGURATION_FILENAME;
 
@@ -18,6 +18,7 @@ bool Configuration::load(QString configurationFilename) {
 		// Server
 		server.setHostname(settings.value("Server/Hostname", Defaults::HOSTNAME).toString());
 		server.setPort(settings.value("Server/Port", Defaults::PORT).toUInt());
+		server.setWaitSecondsAfterThreadsShutdown(settings.value("Server/WaitSecondsAfterThreadShutdown", QVariant::fromValue(Defaults::WAIT_SECONDS_AFTER_THREAD_SHUTDOWN)).toUInt());
 
 		// Logging
 		qDebug() << "Logging";
@@ -36,10 +37,10 @@ bool Configuration::load(QString configurationFilename) {
 			logLibrary = new SystemLogLibrary;
 		}
 
-		return true;
+		return ErrorEnumeration::NONE;
 	}
 
-	return false;
+	return ErrorEnumeration::ERROR;
 }
 
 void Configuration::setServer(const ServerConfigurationType &server) {
@@ -52,7 +53,8 @@ ServerConfigurationType Configuration::getServer() const {
 
 bool Configuration::log(
 	const QString &message,
-	const bool error
+	const bool error,
+	const qint64 pid
 ) {
 	if(logLibrary.isNull()) {
 		SystemLogLibrary systemLogLibrary;
@@ -62,5 +64,5 @@ bool Configuration::log(
 		return false;
 	}
 
-	return logLibrary->log(message, error);
+	return logLibrary->log(message, error, pid);
 }

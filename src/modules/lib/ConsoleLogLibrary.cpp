@@ -11,12 +11,13 @@ ConsoleLogLibrary::ConsoleLogLibrary(
 
 bool ConsoleLogLibrary::log(
 	const QString &message,
-	const bool error
+	const bool error,
+	const qint64 pid
 ) {
 	if(error)
-		qCritical("%s", createLogString(message, error).toLatin1().data());
+		qCritical("%s", createLogString(message, error, pid).toLatin1().data());
 	else
-		qDebug("%s", createLogString(message, error).toLatin1().data());
+		qDebug("%s", createLogString(message, error, pid).toLatin1().data());
 
 	return true;
 }

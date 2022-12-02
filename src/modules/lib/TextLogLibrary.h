@@ -13,7 +13,8 @@ class TextLogLibrary : public LogLibrary {
 
 		virtual bool log(
 			const QString &message,
-			const bool error = false
+			const bool error = false,
+			const qint64 pid = 0
 		) override;
 
 		void setLogFilename(const QString &logFilename);

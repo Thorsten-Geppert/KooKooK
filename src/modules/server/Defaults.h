@@ -11,11 +11,13 @@ class Defaults {
 		static const quint16 PORT;
 		static const QString LOG_LIBRARY;
 		static const QStringList LOG_LIBRARIES;
+		static const unsigned long WAIT_SECONDS_AFTER_THREAD_SHUTDOWN;
 
 };
 
-const QString Defaults::CONFIGURATION_FILENAME = "test";
-const QString Defaults::HOSTNAME               = "localhost";
-const quint16 Defaults::PORT                   = 12345;
-const QStringList Defaults::LOG_LIBRARIES      = QStringList() << "System" << "Console" << "Text";
-const QString Defaults::LOG_LIBRARY            = LOG_LIBRARIES[0];
+const QString Defaults::CONFIGURATION_FILENAME                   = "test";
+const QString Defaults::HOSTNAME                                 = "localhost";
+const quint16 Defaults::PORT                                     = 12345;
+const QStringList Defaults::LOG_LIBRARIES                        = QStringList() << "System" << "Console" << "Text";
+const QString Defaults::LOG_LIBRARY                              = LOG_LIBRARIES[0];
+const unsigned long Defaults::WAIT_SECONDS_AFTER_THREAD_SHUTDOWN = 5;

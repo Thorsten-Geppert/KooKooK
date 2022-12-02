@@ -16,12 +16,13 @@ TextLogLibrary::TextLogLibrary(
 
 bool TextLogLibrary::log(
 	const QString &message,
-	const bool error
+	const bool error,
+	const qint64 pid
 ) {
 	QFile file(getLogFilename());
 	if(file.open(QIODevice::WriteOnly | QIODevice::Append)) {
 		QTextStream stream(&file);
-		stream << createLogString(message, error) << Qt::endl;
+		stream << createLogString(message, error, pid) << Qt::endl;
 		file.close();
 
 		return true;

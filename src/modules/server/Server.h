@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QTcpServer>
+#include <QSocketNotifier>
 #include "ServerThreadManager.h"
 #include "RuntimeInformationType.h"
 
@@ -17,14 +18,28 @@ class Server : public QTcpServer {
 		);
 
 		bool start();
+		bool stop();
 		void incomingConnection(qintptr clientSocketDescriptor) override;
-	
+
+		static void hupSignalHandler(int);
+		static void termSignalHandler(int);
+
 	private:
 		ServerThreadManager serverThreadManager;
 		RuntimeInformationType &rit;
 
+		static int hupSignalFd[2];
+		static int termSignalFd[2];
+
+		QSocketNotifier *hupSocketNotifier;
+		QSocketNotifier *termSocketNotifier;
+
 		QTimer timer;
 
+	public slots:
+		void hupSignalSlot();
+		void termSignalSlot();
+	
 	private slots:
 		void timeout();
 	

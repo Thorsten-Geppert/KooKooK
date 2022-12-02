@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 			&QCoreApplication::exit
 		);
 		if(!server.start()) {
-			qDebug() << "Could not start server";
+			rit.log("Could not start server", true);
 		}
 
 		return app.exec();

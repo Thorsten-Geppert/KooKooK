@@ -3,3 +3,6 @@
 ConfigurationType::ConfigurationType(
 ) {
 }
+
+ConfigurationType::~ConfigurationType() {
+}

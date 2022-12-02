@@ -2,11 +2,19 @@
 #include <QSettings>
 #include <QStringList>
 #include "Defaults.h"
+#include "lib/PostgreSQLDatabaseConfigurationType.h"
+#include "lib/MySQLDatabaseConfigurationType.h"
+#include "lib/SQLiteDatabaseConfigurationType.h"
 #include "../lib/SystemLogLibrary.h"
 #include "../lib/ConsoleLogLibrary.h"
 #include "../lib/TextLogLibrary.h"
 
 Configuration::Configuration() {
+}
+
+Configuration::~Configuration() {
+	if(database)
+		delete database;
 }
 
 Configuration::ErrorEnumeration Configuration::load(QString configurationFilename) {
@@ -15,14 +23,8 @@ Configuration::ErrorEnumeration Configuration::load(QString configurationFilenam
 
 	QSettings settings(configurationFilename, QSettings::IniFormat);
 	if(settings.status() == QSettings::NoError) {
-		// Server
-		server.setHostname(settings.value("Server/Hostname", Defaults::HOSTNAME).toString());
-		server.setPort(settings.value("Server/Port", Defaults::PORT).toUInt());
-		server.setWaitSecondsAfterThreadsShutdown(settings.value("Server/WaitSecondsAfterThreadShutdown", QVariant::fromValue(Defaults::WAIT_SECONDS_AFTER_THREAD_SHUTDOWN)).toUInt());
-
 		// Logging
-		qDebug() << "Logging";
-		auto logLibraryType = settings.value("Log/Library", Defaults::LOG_LIBRARY).toString().toLower();
+		QString logLibraryType(settings.value("Log/Library", Defaults::LOG_LIBRARY).toString().toLower());
 		if(!Defaults::LOG_LIBRARIES.contains(logLibraryType, Qt::CaseInsensitive))
 			logLibraryType = Defaults::LOG_LIBRARY;
 
@@ -35,6 +37,40 @@ Configuration::ErrorEnumeration Configuration::load(QString configurationFilenam
 			logLibrary = new ConsoleLogLibrary;
 		} else {
 			logLibrary = new SystemLogLibrary;
+		}
+
+		// Server
+		server.setHostname(settings.value("Server/Hostname", Defaults::HOSTNAME).toString());
+		server.setPort(settings.value("Server/Port", Defaults::PORT).toUInt());
+		server.setWaitSecondsAfterThreadsShutdown(settings.value("Server/WaitSecondsAfterThreadShutdown", QVariant::fromValue(Defaults::WAIT_SECONDS_AFTER_THREAD_SHUTDOWN)).toUInt());
+
+		// Database
+		QString databaseType(settings.value("Database/Type", Defaults::DATABASE_TYPE).toString().toLower());
+		if(!Defaults::DATABASE_TYPES.contains(databaseType, Qt::CaseInsensitive)) {
+			logLibrary->log(QString("Database driver %1 not available. Please use one of these: %2").arg(databaseType).arg(Defaults::DATABASE_TYPES.join(", ")));
+			return ErrorEnumeration::DATABASE_DRIVER_ERROR;
+		}
+
+		if(databaseType == "postgresql") {
+			database = new PostgreSQLDatabaseConfigurationType(
+				settings.value("Database/Hostname", "localhost").toString(),
+				settings.value("Database/Database", "kookook").toString(),
+				settings.value("Database/Username", "pgsql").toString(),
+				settings.value("Database/Password", "").toString(),
+				settings.value("Database/Port", "5432").toInt()
+			);
+		} else if(databaseType == "mysql") {
+			database = new MySQLDatabaseConfigurationType(
+				settings.value("Database/Hostname", "localhost").toString(),
+				settings.value("Database/Database", "kookook").toString(),
+				settings.value("Database/Username", "mysql").toString(),
+				settings.value("Database/Password", "mysql").toString(),
+				settings.value("Database/Port", "3306").toInt()
+			);
+		} else {
+			database = new SQLiteDatabaseConfigurationType(
+				settings.value("Database/Database", "/tmp/kookook.sqlite").toString()
+			);
 		}
 
 		return ErrorEnumeration::NONE;

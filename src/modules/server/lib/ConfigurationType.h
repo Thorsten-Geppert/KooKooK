@@ -4,5 +4,6 @@ class ConfigurationType {
 
 	public:
 		ConfigurationType();
+		virtual ~ConfigurationType();
 
 };

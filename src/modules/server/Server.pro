@@ -9,6 +9,11 @@ HEADERS +=	Defaults.h \
 			lib/ConfigurationType.h \
 			lib/VariantHash.h \
 			lib/ServerConfigurationType.h \
+			lib/DatabaseConfigurationType.h \
+			lib/SQLServerDatabaseConfigurationType.h \
+			lib/PostgreSQLDatabaseConfigurationType.h \
+			lib/MySQLDatabaseConfigurationType.h \
+			lib/SQLiteDatabaseConfigurationType.h \
 			\
 			../lib/LogLibrary.h \
 			../lib/SystemLogLibrary.h \
@@ -26,13 +31,18 @@ SOURCES += 	main.cpp \
 			lib/ConfigurationType.cpp \
 			lib/VariantHash.cpp \
 			lib/ServerConfigurationType.cpp \
+			lib/DatabaseConfigurationType.cpp \
+			lib/SQLServerDatabaseConfigurationType.cpp \
+			lib/PostgreSQLDatabaseConfigurationType.cpp \
+			lib/MySQLDatabaseConfigurationType.cpp \
+			lib/SQLiteDatabaseConfigurationType.cpp \
 			\
 			../lib/LogLibrary.cpp \
 			../lib/SystemLogLibrary.cpp \
 			../lib/TextLogLibrary.cpp \
 			../lib/ConsoleLogLibrary.cpp
 
-QT += network
+QT += network sql
 CONFIG += console c++11
 Debug:DESTDIR = debug
 Release:DESTDIR = release

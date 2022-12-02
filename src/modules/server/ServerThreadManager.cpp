@@ -3,9 +3,12 @@
 #include <QTime>
 
 ServerThreadManager::ServerThreadManager(
+	RuntimeInformationType &rit,
 	QObject *parent
 ) : QObject(
 	parent
+), rit(
+	rit
 ) {
 }
 
@@ -26,9 +29,12 @@ bool ServerThreadManager::create(const qintptr clientSocketDescriptor) {
 			serverThread->start();
 
 	} else {
-		qDebug() << "Could not start thread";
+		rit.log("Could not start thread", true);
+
 		return false;
 	}
+
+	rit.log(QString("New server thread started (Thread count: %1)").arg(getCount()), true);
 
 	return true;
 }
@@ -42,7 +48,7 @@ bool ServerThreadManager::stop(
 	for(int i = 0; i < serverThreadCount; i++) {
 		serverThread = serverThreadList.value(i);
 		if(serverThread) {
-			qDebug() << "Quit thread";
+			rit.log(QString("Try to stop thread number %1").arg(i));
 			serverThread->quit();
 		}
 	}
@@ -54,7 +60,7 @@ bool ServerThreadManager::stop(
 	for(int i = 0; i < serverThreadList.count(); i++) {
 		serverThread = serverThreadList.value(i);
 		if(serverThread) {
-			qDebug() << "Terminate thread";
+			rit.log(QString("Try to terminate thread number %1").arg(i));
 			serverThread->terminate();
 			terminated++;
 		}

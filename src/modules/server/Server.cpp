@@ -13,6 +13,8 @@ Server::Server(
 	QObject *parent
 ) : QTcpServer(
 	parent
+), serverThreadManager(
+	rit
 ), rit(
 	rit
 ) {

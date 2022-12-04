@@ -73,6 +73,12 @@ Configuration::ErrorEnumeration Configuration::load(QString configurationFilenam
 			);
 		}
 
+		if(database) {
+			sqlDatabase = database->create();
+			if(!sqlDatabase.open())
+				return ErrorEnumeration::DATABASE_NOT_OPEN;
+		}
+
 		return ErrorEnumeration::NONE;
 	}
 
@@ -101,4 +107,21 @@ bool Configuration::log(
 	}
 
 	return logLibrary->log(message, error, pid);
+}
+
+QSqlDatabase &Configuration::getSqlDatabase() {
+	return sqlDatabase;
+}
+
+QString Configuration::ErrorEnumerationToString(const ErrorEnumeration errorEnumeration) {
+	QString message("Unknown error");
+
+	switch(errorEnumeration) {
+		case ErrorEnumeration::NONE:                  message = "NONE"; break;
+		case ErrorEnumeration::ERROR:                 message = "ERROR"; break;
+		case ErrorEnumeration::DATABASE_DRIVER_ERROR: message = "DATABASE_DRIVER_ERROR"; break;
+		case ErrorEnumeration::DATABASE_NOT_OPEN:     message = "DATABASE_NOT_OPEN"; break;
+	}
+
+	return message;
 }

@@ -4,6 +4,7 @@
 #include "lib/DatabaseConfigurationType.h"
 #include "../lib/LogLibrary.h"
 #include <QPointer>
+#include <QSqlDatabase>
 #include <memory>
 
 class Configuration {
@@ -12,7 +13,8 @@ class Configuration {
 		enum class ErrorEnumeration:int {
 			NONE = 0,
 			ERROR = 1,
-			DATABASE_DRIVER_ERROR
+			DATABASE_DRIVER_ERROR,
+			DATABASE_NOT_OPEN
 		};
 
 		Configuration();
@@ -28,11 +30,16 @@ class Configuration {
 			const bool error = false,
 			const qint64 pid = 0
 		);
+
+		QSqlDatabase &getSqlDatabase();
+
+		static QString ErrorEnumerationToString(const ErrorEnumeration errorEnumeration);
 	
 	private:
 		ServerConfigurationType server;
 		// TODO replace with smart pointer
 		DatabaseConfigurationType *database = nullptr;
+		QSqlDatabase sqlDatabase;
 		QPointer<LogLibrary> logLibrary;
 
 };

@@ -56,7 +56,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	RuntimeInformationType rit;
-	if(rit.loadConfiguration(argv[1]) == Configuration::ErrorEnumeration::NONE) {
+	Configuration::ErrorEnumeration configurationError = rit.loadConfiguration(argv[1]);
+	if(configurationError == Configuration::ErrorEnumeration::NONE) {
 		QCoreApplication app(argc, argv);
 
 		rit.setPid(app.applicationPid());
@@ -86,6 +87,8 @@ int main(int argc, char *argv[]) {
 		}
 
 		return app.exec();
+	} else {
+		rit.log(QString("Startup error: Configuration could not be loaded: %1").arg(Configuration::ErrorEnumerationToString(configurationError)));
 	}
 
 	return 2;

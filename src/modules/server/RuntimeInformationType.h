@@ -22,8 +22,11 @@ class RuntimeInformationType : public QObject {
 		void setPid(const qint64 pid);
 		qint64 getPid() const;
 
+		QSqlDatabase &getSqlDatabase();
+		QSqlDatabase &getDb(); // Synonym for getSqlDatabase()
+
 	private:
 		Configuration configuration;
-		qint64 pid;
+		qint64 pid = 0;
 
 };

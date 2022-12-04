@@ -26,3 +26,11 @@ void RuntimeInformationType::setPid(const qint64 pid) {
 qint64 RuntimeInformationType::getPid() const {
 	return pid;
 }
+
+QSqlDatabase &RuntimeInformationType::getSqlDatabase() {
+	return configuration.getSqlDatabase();
+}
+
+QSqlDatabase &RuntimeInformationType::getDb() {
+	return configuration.getSqlDatabase();
+}

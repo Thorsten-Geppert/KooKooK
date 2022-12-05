@@ -14,6 +14,7 @@ class Defaults {
 		static const unsigned long WAIT_SECONDS_AFTER_THREAD_SHUTDOWN;
 		static const QString DATABASE_TYPE;
 		static const QStringList DATABASE_TYPES;
+		static const unsigned int THREADS;
 
 };
 
@@ -25,3 +26,4 @@ const QString Defaults::LOG_LIBRARY                              = LOG_LIBRARIES
 const unsigned long Defaults::WAIT_SECONDS_AFTER_THREAD_SHUTDOWN = 5;
 const QString Defaults::DATABASE_TYPE                            = "SQLite";
 const QStringList Defaults::DATABASE_TYPES                       = QStringList() << "SQLite" << "PostgreSQL" << "MySQL";
+const unsigned int Defaults::THREADS                             = 10;

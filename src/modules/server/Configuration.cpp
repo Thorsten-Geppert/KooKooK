@@ -43,6 +43,7 @@ Configuration::ErrorEnumeration Configuration::load(QString configurationFilenam
 		server.setHostname(settings.value("Server/Hostname", Defaults::HOSTNAME).toString());
 		server.setPort(settings.value("Server/Port", Defaults::PORT).toUInt());
 		server.setWaitSecondsAfterThreadsShutdown(settings.value("Server/WaitSecondsAfterThreadShutdown", QVariant::fromValue(Defaults::WAIT_SECONDS_AFTER_THREAD_SHUTDOWN)).toUInt());
+		server.setThreads(settings.value("Server/Threads", QVariant::fromValue(Defaults::THREADS)).toUInt());
 
 		// Database
 		QString databaseType(settings.value("Database/Type", Defaults::DATABASE_TYPE).toString().toLower());

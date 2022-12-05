@@ -17,6 +17,13 @@ int ServerThreadManager::getCount() const {
 }
 
 bool ServerThreadManager::create(const qintptr clientSocketDescriptor) {
+	const unsigned int availableThreads = rit.getConfiguration().getServer().getThreads();
+	const unsigned int runningThreads   = static_cast<unsigned int>(getCount());
+	if(runningThreads >= availableThreads) {
+		rit.log(QString("Could not create a connection, thread count: %1, available thread count: %2").arg(runningThreads).arg(availableThreads));
+		return false;
+	}
+
 	ServerThread *serverThread = new ServerThread(
 		rit,
 		serverThreadList,

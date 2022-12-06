@@ -1,0 +1,106 @@
+#include "SslConfigurationType.h"
+#include <QFile>
+#include <QIODevice>
+#include <QSsl>
+
+SslConfigurationType::SslConfigurationType(
+) : ConfigurationType(
+) {
+}
+
+SslConfigurationType::SslConfigurationType(
+	const QString &serverCaFilename,
+	const QString &clientCaFilename,
+	const QString &keyFilename,
+	const QString &certificateFilename
+) : ConfigurationType(
+) {
+	setServerCaFilename(serverCaFilename);
+	setClientCaFilename(clientCaFilename);
+	setKeyFilename(keyFilename);
+	setCertificateFilename(certificateFilename);
+}
+
+void SslConfigurationType::setServerCaFilename(const QString &serverCaFilename) {
+	this->serverCaFilename = serverCaFilename;
+}
+
+QString SslConfigurationType::getServerCaFilename() const {
+	return serverCaFilename;
+}
+
+void SslConfigurationType::setClientCaFilename(const QString &clientCaFilename) {
+	this->clientCaFilename = clientCaFilename;
+}
+
+QString SslConfigurationType::getClientCaFilename() const {
+	return clientCaFilename;
+}
+
+void SslConfigurationType::setKeyFilename(const QString &keyFilename) {
+	this->keyFilename = keyFilename;
+}
+
+QString SslConfigurationType::getKeyFilename() const {
+	return keyFilename;
+}
+
+QSslKey SslConfigurationType::getKey(bool *ok) const {
+	QSslKey sslKey;
+
+	bool tmpOk = false;
+	QFile keyFile(getKeyFilename());
+	if(keyFile.open(QIODevice::ReadOnly)) {
+		sslKey = QSslKey(keyFile.readAll(), QSsl::Rsa);
+
+		keyFile.close();
+
+		tmpOk = true;
+	}
+
+	if(ok)
+		*ok = tmpOk;
+
+	return sslKey;
+}
+
+void SslConfigurationType::setCertificateFilename(const QString &certificateFilename) {
+	this->certificateFilename = certificateFilename;
+}
+
+QString SslConfigurationType::getCertificateFilename() const {
+	return certificateFilename;
+}
+
+QSslCertificate SslConfigurationType::getCertificate(bool *ok) const {
+	QSslCertificate sslCertificate;
+
+	bool tmpOk = false;
+	QFile certificateFile(getCertificateFilename());
+	if(certificateFile.open(QIODevice::ReadOnly)) {
+		sslCertificate = QSslCertificate(certificateFile.readAll());
+
+		certificateFile.close();
+
+		tmpOk = true;
+	}
+
+	if(ok)
+		*ok = tmpOk;
+
+	return sslCertificate;
+}
+
+QString SslConfigurationType::toString() const {
+	return QString(
+		"SCA: %1, CCA %2, Key %3, Certificate: %4"
+	).arg(
+		getServerCaFilename()
+	).arg(
+		getClientCaFilename()
+	).arg(
+		getKeyFilename()
+	).arg(
+		getCertificateFilename()
+	);
+}

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QTcpServer>
+#include <QSslKey>
+#include <QSslCertificate>
 #include <QSocketNotifier>
 #include "ServerThreadManager.h"
 #include "RuntimeInformationType.h"
@@ -27,6 +29,9 @@ class Server : public QTcpServer {
 	private:
 		ServerThreadManager serverThreadManager;
 		RuntimeInformationType &rit;
+
+		QSslKey sslKey;
+		QSslCertificate sslCertificate;
 
 		static int hupSignalFd[2];
 		static int termSignalFd[2];

@@ -45,6 +45,13 @@ Configuration::ErrorEnumeration Configuration::load(QString configurationFilenam
 		server.setWaitSecondsAfterThreadsShutdown(settings.value("Server/WaitSecondsAfterThreadShutdown", QVariant::fromValue(Defaults::WAIT_SECONDS_AFTER_THREAD_SHUTDOWN)).toUInt());
 		server.setThreads(settings.value("Server/Threads", QVariant::fromValue(Defaults::THREADS)).toUInt());
 
+		/// SSL
+		auto &ssl = server.getSsl();
+		ssl.setServerCaFilename(settings.value("Server/SSLServerCaFilename", Defaults::SSL_SERVER_CA_FILENAME).toString());
+		ssl.setClientCaFilename(settings.value("Server/SSLClientCaFilename", Defaults::SSL_CLIENT_CA_FILENAME).toString());
+		ssl.setKeyFilename(settings.value("Server/SSLKeyFilename", Defaults::SSL_KEY_FILENAME).toString());
+		ssl.setCertificateFilename(settings.value("Server/SSLCertificatFilename", Defaults::SSL_CERTIFICATE_FILENAME).toString());
+
 		// Database
 		QString databaseType(settings.value("Database/Type", Defaults::DATABASE_TYPE).toString().toLower());
 		if(!Defaults::DATABASE_TYPES.contains(databaseType, Qt::CaseInsensitive)) {
@@ -90,7 +97,7 @@ void Configuration::setServer(const ServerConfigurationType &server) {
 	this->server = server;
 }
 
-ServerConfigurationType Configuration::getServer() const {
+ServerConfigurationType &Configuration::getServer() {
 	return server;
 }
 

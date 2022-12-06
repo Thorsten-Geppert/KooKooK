@@ -14,6 +14,7 @@ HEADERS +=	Defaults.h \
 			lib/ConfigurationType.h \
 			lib/VariantHash.h \
 			lib/ServerConfigurationType.h \
+			lib/SslConfigurationType.h \
 			lib/DatabaseConfigurationType.h \
 			lib/SQLServerDatabaseConfigurationType.h \
 			lib/PostgreSQLDatabaseConfigurationType.h \
@@ -44,6 +45,7 @@ SOURCES += 	main.cpp \
 			lib/ConfigurationType.cpp \
 			lib/VariantHash.cpp \
 			lib/ServerConfigurationType.cpp \
+			lib/SslConfigurationType.cpp \
 			lib/DatabaseConfigurationType.cpp \
 			lib/SQLServerDatabaseConfigurationType.cpp \
 			lib/PostgreSQLDatabaseConfigurationType.cpp \
@@ -58,6 +60,7 @@ SOURCES += 	main.cpp \
 			../lib/TextLogLibrary.cpp \
 			../lib/ConsoleLogLibrary.cpp
 
+;LIBS += -L/usr/local/Cellar/openssl@3/3.0.7/lib -lcrypto -lssl
 QT += network sql
 CONFIG += console c++11
 Debug:DESTDIR = debug

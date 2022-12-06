@@ -23,7 +23,7 @@ class Configuration {
 		ErrorEnumeration load(QString configurationFilename = "");
 
 		void setServer(const ServerConfigurationType &server);
-		ServerConfigurationType getServer() const;
+		ServerConfigurationType &getServer();
 
 		bool log(
 			const QString &message,

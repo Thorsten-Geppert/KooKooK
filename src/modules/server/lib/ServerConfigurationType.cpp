@@ -47,3 +47,7 @@ void ServerConfigurationType::setThreads(const unsigned int threads) {
 unsigned int ServerConfigurationType::getThreads() const {
 	return threads;
 }
+
+SslConfigurationType &ServerConfigurationType::getSsl() {
+	return sslConfigurationType;
+}

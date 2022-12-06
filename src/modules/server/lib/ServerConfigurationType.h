@@ -2,6 +2,7 @@
 
 #include "ConfigurationType.h"
 #include <QString>
+#include "SslConfigurationType.h"
 
 class ServerConfigurationType : public ConfigurationType {
 	
@@ -24,11 +25,15 @@ class ServerConfigurationType : public ConfigurationType {
 
 		void setThreads(const unsigned int threads);
 		unsigned int getThreads() const;
+
+		SslConfigurationType &getSsl();
 	
 	private:
 		QString hostname;
 		quint16 port = 0;
 		unsigned long waitSecondsAfterThreadsShutdown = 5;
 		unsigned int threads = 10;
+
+		SslConfigurationType sslConfigurationType;
 
 };

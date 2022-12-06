@@ -62,6 +62,8 @@ int main(int argc, char *argv[]) {
 
 		rit.setPid(app.applicationPid());
 
+		rit.log(QString("SSL info: %1").arg(rit.getConfiguration().getServer().getSsl().toString()));
+
 		Server server(rit);
 
 		switch(setupUnixSignalHandlers()) {

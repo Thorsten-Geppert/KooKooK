@@ -45,21 +45,18 @@ QString SslConfigurationType::getKeyFilename() const {
 	return keyFilename;
 }
 
-QSslKey SslConfigurationType::getKey(bool *ok) const {
+QSslKey SslConfigurationType::getKey(bool &ok) const {
 	QSslKey sslKey;
 
-	bool tmpOk = false;
+	ok = false;
 	QFile keyFile(getKeyFilename());
 	if(keyFile.open(QIODevice::ReadOnly)) {
 		sslKey = QSslKey(keyFile.readAll(), QSsl::Rsa);
 
 		keyFile.close();
 
-		tmpOk = true;
+		ok = true;
 	}
-
-	if(ok)
-		*ok = tmpOk;
 
 	return sslKey;
 }
@@ -72,23 +69,8 @@ QString SslConfigurationType::getCertificateFilename() const {
 	return certificateFilename;
 }
 
-QSslCertificate SslConfigurationType::getCertificate(bool *ok) const {
-	QSslCertificate sslCertificate;
-
-	bool tmpOk = false;
-	QFile certificateFile(getCertificateFilename());
-	if(certificateFile.open(QIODevice::ReadOnly)) {
-		sslCertificate = QSslCertificate(certificateFile.readAll());
-
-		certificateFile.close();
-
-		tmpOk = true;
-	}
-
-	if(ok)
-		*ok = tmpOk;
-
-	return sslCertificate;
+QSslCertificate SslConfigurationType::getCertificate(bool &ok) const {
+	return loadCertificate(getCertificateFilename(), &ok);
 }
 
 QString SslConfigurationType::toString() const {
@@ -103,4 +85,47 @@ QString SslConfigurationType::toString() const {
 	).arg(
 		getCertificateFilename()
 	);
+}
+
+bool SslConfigurationType::cache(LogLibrary *logLibrary) {
+	Cache.setServerCaFilename(getServerCaFilename());
+	Cache.setClientCaFilename(getClientCaFilename());
+	
+	bool ok = false;
+	QSslKey key = getKey(ok);
+	if(!ok) {
+		if(logLibrary)
+			logLibrary->log(QString("Could not load ssl key %1").arg(getKeyFilename()));
+	} else {
+		Cache.setKey(key);
+	}
+
+	QSslCertificate certificate = getCertificate(ok);
+	if(!ok) {
+		if(logLibrary)
+			logLibrary->log(QString("Could not load ssl certificate %1").arg(getCertificateFilename()));
+	} else {
+		Cache.setCertificate(certificate);
+	}
+
+	return ok;
+}
+
+QSslCertificate SslConfigurationType::loadCertificate(const QString &certificateFilename, bool *ok) {
+	QSslCertificate sslCertificate;
+
+	bool tmpOk = false;
+	QFile certificateFile(certificateFilename);
+	if(certificateFile.open(QIODevice::ReadOnly)) {
+		sslCertificate = QSslCertificate(certificateFile.readAll());
+
+		certificateFile.close();
+
+		tmpOk = true;
+	}
+
+	if(ok)
+		*ok = tmpOk;
+
+	return sslCertificate;
 }

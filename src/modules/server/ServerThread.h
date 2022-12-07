@@ -2,8 +2,9 @@
 
 #include <QThread>
 #include <QMutex>
-#include <QPointer>
-#include <QTcpSocket>
+#include <QList>
+#include <QSslSocket>
+#include <QSslError>
 #include "RuntimeInformationType.h"
 
 class ServerThreadList;
@@ -29,7 +30,7 @@ class ServerThread : public QThread {
 		ServerThreadList &serverThreadList;
 		QMutex &serverThreadMutex;
 		qintptr clientSocketDescriptor = -1;
-		QPointer<QTcpSocket> clientSocket = nullptr;
+		QSslSocket *clientSocket = nullptr;
 		RuntimeInformationType &rit;
 
 		void setClientSocketDescriptor(const qintptr clientSocketDescriptor);
@@ -38,5 +39,6 @@ class ServerThread : public QThread {
 		void readyRead();
 		void disconnected();
 		void ended();
+		void sslErrors(const QList<QSslError> &errors);
 
 };

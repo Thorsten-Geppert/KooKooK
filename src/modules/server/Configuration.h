@@ -14,7 +14,10 @@ class Configuration {
 			NONE = 0,
 			ERROR = 1,
 			DATABASE_DRIVER_ERROR,
-			DATABASE_NOT_OPEN
+			DATABASE_NOT_OPEN,
+			SSL_INITIALIZE,
+			SSL_LOAD_SERVER_CA_FILE,
+			SSL_LOAD_CLIENT_CA_FILE
 		};
 
 		Configuration();

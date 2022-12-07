@@ -1,6 +1,8 @@
 #include "Configuration.h"
 #include <QSettings>
 #include <QStringList>
+#include <QStringList>
+#include <QSslConfiguration>
 #include "Defaults.h"
 #include "lib/PostgreSQLDatabaseConfigurationType.h"
 #include "lib/MySQLDatabaseConfigurationType.h"
@@ -51,6 +53,27 @@ Configuration::ErrorEnumeration Configuration::load(QString configurationFilenam
 		ssl.setClientCaFilename(settings.value("Server/SSLClientCaFilename", Defaults::SSL_CLIENT_CA_FILENAME).toString());
 		ssl.setKeyFilename(settings.value("Server/SSLKeyFilename", Defaults::SSL_KEY_FILENAME).toString());
 		ssl.setCertificateFilename(settings.value("Server/SSLCertificatFilename", Defaults::SSL_CERTIFICATE_FILENAME).toString());
+		if(!ssl.cache(logLibrary)) {
+			logLibrary->log("Error initialize ssl (create cache)");
+			return ErrorEnumeration::SSL_INITIALIZE;
+		}
+
+		bool loadedCertificate = false;
+		QSslCertificate serverCaCertificate = SslConfigurationType::loadCertificate(ssl.getServerCaFilename(), &loadedCertificate);
+		if(!loadedCertificate) {
+			logLibrary->log(QString("Could not load server ca file %1").arg(ssl.getServerCaFilename()));
+			return ErrorEnumeration::SSL_LOAD_SERVER_CA_FILE;
+		}
+
+		QSslCertificate clientCaCertificate = SslConfigurationType::loadCertificate(ssl.getClientCaFilename(), &loadedCertificate);
+		if(!loadedCertificate) {
+			logLibrary->log(QString("Could not load client ca file %1").arg(ssl.getClientCaFilename()));
+			return ErrorEnumeration::SSL_LOAD_CLIENT_CA_FILE;
+		}
+
+		QSslConfiguration sslConfiguration = QSslConfiguration::defaultConfiguration();
+		sslConfiguration.addCaCertificates(QList<QSslCertificate>() << serverCaCertificate << clientCaCertificate);
+		QSslConfiguration::setDefaultConfiguration(sslConfiguration);
 
 		// Database
 		QString databaseType(settings.value("Database/Type", Defaults::DATABASE_TYPE).toString().toLower());
@@ -125,10 +148,13 @@ QString Configuration::ErrorEnumerationToString(const ErrorEnumeration errorEnum
 	QString message("Unknown error");
 
 	switch(errorEnumeration) {
-		case ErrorEnumeration::NONE:                  message = "NONE"; break;
-		case ErrorEnumeration::ERROR:                 message = "ERROR"; break;
-		case ErrorEnumeration::DATABASE_DRIVER_ERROR: message = "DATABASE_DRIVER_ERROR"; break;
-		case ErrorEnumeration::DATABASE_NOT_OPEN:     message = "DATABASE_NOT_OPEN"; break;
+		case ErrorEnumeration::NONE:                    message = "NONE"; break;
+		case ErrorEnumeration::ERROR:                   message = "ERROR"; break;
+		case ErrorEnumeration::DATABASE_DRIVER_ERROR:   message = "DATABASE_DRIVER_ERROR"; break;
+		case ErrorEnumeration::DATABASE_NOT_OPEN:       message = "DATABASE_NOT_OPEN"; break;
+		case ErrorEnumeration::SSL_INITIALIZE:          message = "SSL_INITIALIZE"; break;
+		case ErrorEnumeration::SSL_LOAD_SERVER_CA_FILE: message = "SSL_LOAD_SERVER_CA_FILE"; break;
+		case ErrorEnumeration::SSL_LOAD_CLIENT_CA_FILE: message = "SSL_LOAD_CLIENT_CA_FILE"; break;
 	}
 
 	return message;

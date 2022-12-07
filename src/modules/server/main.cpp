@@ -78,12 +78,12 @@ int main(int argc, char *argv[]) {
 				rit.log("HUP and TERM signal initialized");
 		}
 
-		QObject::connect(
+		/*QObject::connect(
 			&server,
 			&Server::exit,
 			&app,
 			&QCoreApplication::exit
-		);
+		);*/
 		if(!server.start()) {
 			rit.log("Could not start server", true);
 		}

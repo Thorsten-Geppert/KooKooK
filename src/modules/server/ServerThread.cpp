@@ -23,20 +23,29 @@ ServerThread::ServerThread(
 bool ServerThread::initialize(const qintptr clientSocketDescriptor) {
 	setClientSocketDescriptor(clientSocketDescriptor);
 
-	clientSocket = new QTcpSocket;
+	clientSocket = new QSslSocket(this);
 	if(!clientSocket->setSocketDescriptor(clientSocketDescriptor)) {
 		rit.log(QString("Could not set socket descriptor: %1").arg(clientSocket->errorString()));
 
 		return false;
 	}
 
+	SslConfigurationType::CacheStruct *cache = &rit.getConfiguration().getServer().getSsl().Cache;
+
+	clientSocket->setPrivateKey(cache->getKey());
+	clientSocket->setLocalCertificate(cache->getCertificate());
+	clientSocket->setPeerVerifyMode(QSslSocket::VerifyPeer);
+	clientSocket->startServerEncryption();
+
 	return true;
 }
 
 void ServerThread::run() {
 	if(clientSocket) {
-		connect(clientSocket, &QTcpSocket::readyRead, this, &ServerThread::readyRead);
-		connect(clientSocket, &QTcpSocket::disconnected, this, &ServerThread::disconnected);
+		//connect(clientSocket, &QTcpSocket::readyRead, this, &ServerThread::readyRead);
+		//connect(clientSocket, &QTcpSocket::disconnected, this, &ServerThread::disconnected);
+		//connect(clientSocket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
+		
 	}
 
 	exec();
@@ -67,4 +76,9 @@ void ServerThread::ended() {
 	serverThreadList.removeAll(this);
 
 	deleteLater();
+}
+
+void ServerThread::sslErrors(const QList<QSslError> &errors) {
+	foreach (const QSslError &error, errors)
+		qDebug() << error.errorString();
 }

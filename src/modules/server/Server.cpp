@@ -43,21 +43,6 @@ bool Server::start() {
 	const auto hostname = serverConfiguration.getHostname();
 	const auto port = serverConfiguration.getPort();
 
-	const auto &sslConfiguration = serverConfiguration.getSsl();
-
-	bool ok = false;
-	sslKey = sslConfiguration.getKey(&ok);
-	if(!ok) {
-		rit.log(QString("Could not read or load ssl key file %1").arg(sslConfiguration.getKeyFilename()));
-		return false;
-	}
-
-	sslCertificate = sslConfiguration.getCertificate(&ok);
-	if(!ok) {
-		rit.log(QString("Could not read or load ssl certificate file %1").arg(sslConfiguration.getCertificateFilename()));
-		return false;
-	}
-
 	if(!listen(QHostAddress(hostname), port)) {
 		rit.log(QString("Starting server error (%1:%2): %3").arg(hostname).arg(port).arg(errorString()), true);
 		return false;

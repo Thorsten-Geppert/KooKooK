@@ -53,6 +53,7 @@ Configuration::ErrorEnumeration Configuration::load(QString configurationFilenam
 		ssl.setClientCaFilename(settings.value("Server/SSLClientCaFilename", Defaults::SSL_CLIENT_CA_FILENAME).toString());
 		ssl.setKeyFilename(settings.value("Server/SSLKeyFilename", Defaults::SSL_KEY_FILENAME).toString());
 		ssl.setCertificateFilename(settings.value("Server/SSLCertificatFilename", Defaults::SSL_CERTIFICATE_FILENAME).toString());
+		ssl.setVerify(settings.value("Server/SSLVerify", Defaults::SSL_VERIFY).toBool());
 		if(!ssl.cache(logLibrary)) {
 			logLibrary->log("Error initialize ssl (create cache)");
 			return ErrorEnumeration::SSL_INITIALIZE;

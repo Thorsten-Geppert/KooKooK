@@ -35,7 +35,7 @@ bool ServerThread::initialize(const qintptr clientSocketDescriptor) {
 
 	clientSocket->setPrivateKey(cache->getKey());
 	clientSocket->setLocalCertificate(cache->getCertificate());
-	clientSocket->setPeerVerifyMode(QSslSocket::VerifyPeer);
+	clientSocket->setPeerVerifyMode(cache->getVerify());
 	clientSocket->startServerEncryption();
 
 	return true;

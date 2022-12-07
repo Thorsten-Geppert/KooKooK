@@ -90,6 +90,7 @@ QString SslConfigurationType::toString() const {
 bool SslConfigurationType::cache(LogLibrary *logLibrary) {
 	Cache.setServerCaFilename(getServerCaFilename());
 	Cache.setClientCaFilename(getClientCaFilename());
+	Cache.setVerify(getVerifyMode());
 	
 	bool ok = false;
 	QSslKey key = getKey(ok);
@@ -128,4 +129,16 @@ QSslCertificate SslConfigurationType::loadCertificate(const QString &certificate
 		*ok = tmpOk;
 
 	return sslCertificate;
+}
+
+void SslConfigurationType::setVerify(const bool verify) {
+	this->verify = verify;
+}
+
+bool SslConfigurationType::getVerify() const {
+	return verify;
+}
+
+QSslSocket::PeerVerifyMode SslConfigurationType::getVerifyMode() const {
+	return getVerify() ? QSslSocket::VerifyPeer : QSslSocket::VerifyNone;
 }

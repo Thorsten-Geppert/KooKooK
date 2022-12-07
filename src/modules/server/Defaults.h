@@ -19,6 +19,7 @@ class Defaults {
 		static const QString SSL_CLIENT_CA_FILENAME;
 		static const QString SSL_KEY_FILENAME;
 		static const QString SSL_CERTIFICATE_FILENAME;
+		static const bool SSL_VERIFY;
 
 };
 
@@ -35,3 +36,4 @@ const QString Defaults::SSL_SERVER_CA_FILENAME                   = "ServerCa.pem
 const QString Defaults::SSL_CLIENT_CA_FILENAME                   = "ClientCa.pem";
 const QString Defaults::SSL_KEY_FILENAME                         = "ServerKey.key";
 const QString Defaults::SSL_CERTIFICATE_FILENAME                 = "ServerCertificate.pem";
+const bool Defaults::SSL_VERIFY                                  = true;

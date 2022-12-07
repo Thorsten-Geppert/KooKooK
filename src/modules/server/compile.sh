@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-QMAKE="/Users/thorsten/Qt/6.4.1/macos/bin/qmake6"
+#QMAKE="/Users/thorsten/Qt/6.4.1/macos/bin/qmake6"
+QMAKE=qmake6
 LAST_PATH="`pwd`"
 COMPILE_PATH="`dirname $0`/build"
 

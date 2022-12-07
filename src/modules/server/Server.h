@@ -45,11 +45,6 @@ class Server : public QTcpServer {
 		void hupSignalSlot();
 		void termSignalSlot();
 
-		void sslErrors(const QList<QSslError> &errors);
-		void rx();
-		void disconnected();
-		void link();
-	
 	private slots:
 		void timeout();
 	

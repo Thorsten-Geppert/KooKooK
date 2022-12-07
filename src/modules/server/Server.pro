@@ -60,7 +60,8 @@ SOURCES += 	main.cpp \
 			../lib/TextLogLibrary.cpp \
 			../lib/ConsoleLogLibrary.cpp
 
-;LIBS += -L/usr/local/Cellar/openssl@3/3.0.7/lib -lcrypto -lssl
+RESOURCES = Server.qrc
+
 QT += network sql
 CONFIG += console c++11
 Debug:DESTDIR = debug

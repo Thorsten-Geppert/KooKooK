@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>certificates/clientca.pem</file>
+        <file>certificates/serverca.pem</file>
+        <file>certificates/server.key</file>
+        <file>certificates/server.pem</file>
+    </qresource>
+</RCC>

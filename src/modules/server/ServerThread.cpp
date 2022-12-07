@@ -24,6 +24,7 @@ bool ServerThread::initialize(const qintptr clientSocketDescriptor) {
 	setClientSocketDescriptor(clientSocketDescriptor);
 
 	clientSocket = new QSslSocket(this);
+	connect(clientSocket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
 	if(!clientSocket->setSocketDescriptor(clientSocketDescriptor)) {
 		rit.log(QString("Could not set socket descriptor: %1").arg(clientSocket->errorString()));
 
@@ -42,10 +43,8 @@ bool ServerThread::initialize(const qintptr clientSocketDescriptor) {
 
 void ServerThread::run() {
 	if(clientSocket) {
-		//connect(clientSocket, &QTcpSocket::readyRead, this, &ServerThread::readyRead);
-		//connect(clientSocket, &QTcpSocket::disconnected, this, &ServerThread::disconnected);
-		//connect(clientSocket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
-		
+		connect(clientSocket, &QTcpSocket::readyRead, this, &ServerThread::readyRead);
+		connect(clientSocket, &QTcpSocket::disconnected, this, &ServerThread::disconnected);
 	}
 
 	exec();
@@ -64,6 +63,7 @@ qintptr ServerThread::getClientSocketDescriptor() const {
 
 void ServerThread::readyRead() {
 	QByteArray data = clientSocket->readAll();
+	qDebug() << data;
 	clientSocket->write(data);
 }
 
@@ -79,6 +79,7 @@ void ServerThread::ended() {
 }
 
 void ServerThread::sslErrors(const QList<QSslError> &errors) {
+	qDebug() << "SSL error";
 	foreach (const QSslError &error, errors)
 		qDebug() << error.errorString();
 }

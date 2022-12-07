@@ -55,10 +55,11 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
+	QCoreApplication app(argc, argv);
+
 	RuntimeInformationType rit;
 	Configuration::ErrorEnumeration configurationError = rit.loadConfiguration(argv[1]);
 	if(configurationError == Configuration::ErrorEnumeration::NONE) {
-		QCoreApplication app(argc, argv);
 
 		rit.setPid(app.applicationPid());
 
@@ -78,12 +79,12 @@ int main(int argc, char *argv[]) {
 				rit.log("HUP and TERM signal initialized");
 		}
 
-		/*QObject::connect(
+		QObject::connect(
 			&server,
 			&Server::exit,
 			&app,
 			&QCoreApplication::exit
-		);*/
+		);
 		if(!server.start()) {
 			rit.log("Could not start server", true);
 		}

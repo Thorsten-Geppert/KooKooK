@@ -1,12 +1,9 @@
 #pragma once
 
-#include <QObject>
 #include <QString>
 #include "Configuration.h"
 
-class RuntimeInformationType : public QObject {
-
-	Q_OBJECT
+class RuntimeInformationType {
 
 	public:
 		RuntimeInformationType();

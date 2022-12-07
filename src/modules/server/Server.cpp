@@ -36,6 +36,8 @@ Server::Server(
 	timer.setInterval(5000);
 	timer.setSingleShot(true);
 	//timer.start();
+
+	connect(this, &Server::newConnection, this, &Server::link);
 }
 
 bool Server::start() {
@@ -54,7 +56,38 @@ bool Server::start() {
 }
 
 void Server::incomingConnection(qintptr clientSocketDescriptor) {
-	serverThreadManager.create(clientSocketDescriptor);
+	//serverThreadManager.create(clientSocketDescriptor);
+
+	qDebug() << "incoming";
+
+	QSslSocket *sslSocket = new QSslSocket(this);
+	connect(sslSocket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
+
+	SslConfigurationType::CacheStruct *cache = &rit.getConfiguration().getServer().getSsl().Cache;
+
+	sslSocket->setSocketDescriptor(clientSocketDescriptor);
+	sslSocket->setPrivateKey(cache->getKey());
+	sslSocket->setLocalCertificate(cache->getCertificate());
+	sslSocket->setPeerVerifyMode(QSslSocket::VerifyPeer);
+	sslSocket->startServerEncryption();
+}
+
+void Server::link() {
+	QTcpSocket *clientSocket = nextPendingConnection();
+	connect(clientSocket, &QTcpSocket::readyRead, this, &Server::rx);
+	connect(clientSocket, &QTcpSocket::disconnected, this, &Server::disconnected);
+}
+
+void Server::rx() {
+	QTcpSocket* clientSocket = qobject_cast<QTcpSocket*>(sender());
+	qDebug() << clientSocket->readAll();
+	clientSocket->write("Server says Hello");
+}
+
+void Server::disconnected() {
+	qDebug("Client Disconnected");
+	QTcpSocket* clientSocket = qobject_cast<QTcpSocket*>(sender());
+	clientSocket->deleteLater();
 }
 
 void Server::timeout() {
@@ -113,4 +146,9 @@ bool Server::stop() {
 		rit.log("Stop message: Error: Could not shut down all processes (threads) correctly", true);
 
 	return stopped;
+}
+
+void Server::sslErrors(const QList<QSslError> &errors) {
+	foreach (const QSslError &error, errors)
+		qDebug() << error.errorString();
 }

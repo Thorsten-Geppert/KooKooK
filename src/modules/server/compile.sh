@@ -24,6 +24,6 @@ else
 	fi
 
 	cd "${COMPILE_PATH}"
-	"${QMAKE}" ../ && make
+	"${QMAKE}" ../ && make -j8
 	cd "${LAST_PATH}"
 fi

@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <sys/socket.h>
 #include <unistd.h>
+#include "UserRitLibraryDatabaseObject.h"
+#include "UserRitTypeDatabaseObjectList.h"
 
 int Server::hupSignalFd[2] = { 0, 0 };
 int Server::termSignalFd[2] = { 0, 0 };
@@ -31,11 +33,9 @@ Server::Server(
 	termSocketNotifier = new QSocketNotifier(termSignalFd[1], QSocketNotifier::Read, this);
 	connect(termSocketNotifier, SIGNAL(activated(QSocketDescriptor)), this, SLOT(termSignalSlot()));
 
-	// Test
-	connect(&timer, &QTimer::timeout, this, &Server::timeout);
-	timer.setInterval(5000);
-	timer.setSingleShot(true);
-	//timer.start();
+	connect(&userTimer, &QTimer::timeout, this, &Server::userTimeout);
+	userTimer.setInterval(5000);
+	userTimer.start();
 }
 
 bool Server::start() {
@@ -57,13 +57,26 @@ void Server::incomingConnection(qintptr clientSocketDescriptor) {
 	serverThreadManager.create(clientSocketDescriptor);
 }
 
-void Server::timeout() {
-	qDebug() << "Thread count:" << serverThreadManager.getCount();
-	serverThreadManager.stop();
+void Server::userTimeout() {
+	UserRitLibraryDatabaseObject userRitLibraryDatabaseObject(rit);
+	QScopedPointer<UserRitTypeDatabaseObjectList> userRitTypeDatabaseObjectList(userRitLibraryDatabaseObject.getAll());
 
-	QThread::sleep(3);
+	if(userRitTypeDatabaseObjectList) {
+		UserRitTypeDatabaseObject *user = nullptr;
+		const int count = userRitTypeDatabaseObjectList->count();
+		for(int i = 0; i < count; i++) {
+			user = userRitTypeDatabaseObjectList->value(i);
+			if(user)
+				users[user->getUsername()] = user->getPassword();
+		}
 
-	emit exit(0);
+		QHashIterator<QString, QString> iterator(users);
+		while(iterator.hasNext()) {
+			iterator.next();
+			if(!userRitTypeDatabaseObjectList->contains(iterator.key()))
+				users.remove(iterator.key());
+		}
+	}
 }
 
 void Server::hupSignalHandler(int) {

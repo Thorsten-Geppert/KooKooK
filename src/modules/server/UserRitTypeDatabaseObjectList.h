@@ -8,5 +8,6 @@ class UserRitTypeDatabaseObjectList : public QList<UserRitTypeDatabaseObject *> 
 	public:
 		UserRitTypeDatabaseObjectList();
 		virtual ~UserRitTypeDatabaseObjectList();
+		bool contains(const QString &username) const;
 
 };

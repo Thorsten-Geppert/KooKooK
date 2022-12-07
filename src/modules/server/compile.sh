@@ -3,6 +3,7 @@
 QMAKE=qmake6
 LAST_PATH="`pwd`"
 COMPILE_PATH="`dirname $0`/build"
+CORES=`sysctl -n hw.ncpu`
 
 if [ $# -gt 0 ]
 then
@@ -24,6 +25,6 @@ else
 	fi
 
 	cd "${COMPILE_PATH}"
-	"${QMAKE}" ../ && make -j8
+	"${QMAKE}" ../ && make -j ${CORES}
 	cd "${LAST_PATH}"
 fi

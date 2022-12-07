@@ -13,6 +13,6 @@ class UserRitLibraryDatabaseObject : public RitLibraryDatabaseObject {
 			QObject *parent = nullptr
 		);
 
-		UserRitTypeDatabaseObjectList getAll();
+		UserRitTypeDatabaseObjectList *getAll();
 
 };

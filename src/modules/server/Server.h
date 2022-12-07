@@ -4,6 +4,7 @@
 #include <QSslKey>
 #include <QSslCertificate>
 #include <QSocketNotifier>
+#include <QHash>
 #include "ServerThreadManager.h"
 #include "RuntimeInformationType.h"
 
@@ -30,6 +31,8 @@ class Server : public QTcpServer {
 		ServerThreadManager serverThreadManager;
 		RuntimeInformationType &rit;
 
+		QHash<QString, QString> users;
+
 		QSslKey sslKey;
 		QSslCertificate sslCertificate;
 
@@ -39,14 +42,14 @@ class Server : public QTcpServer {
 		QSocketNotifier *hupSocketNotifier;
 		QSocketNotifier *termSocketNotifier;
 
-		QTimer timer;
+		QTimer userTimer;
 
 	public slots:
 		void hupSignalSlot();
 		void termSignalSlot();
 
 	private slots:
-		void timeout();
+		void userTimeout();
 	
 	signals:
 		void exit(int status);

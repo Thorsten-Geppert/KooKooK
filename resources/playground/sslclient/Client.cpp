@@ -5,6 +5,8 @@
 #include <QFile>
 #include <QDebug>
 #include "Configuration.h"
+#include "../../../src/modules/lib/Version.h"
+#include "../../../src/modules/server/Protocol.h"
 
 Client::Client() {
 	QSslCertificate sslCertificate;
@@ -32,11 +34,11 @@ Client::Client() {
 
 bool Client::connectToServer() {
 	clientSocket.connectToHostEncrypted(HOSTNAME, PORT);
-	if(clientSocket.waitForEncrypted(5000)) {
-		clientSocket.write("Hello Server");
+
+	if(clientSocket.waitForEncrypted(10000)) {
 		return true;
 	}
-	
+
 	return false;
 }
 

@@ -1,6 +1,8 @@
 #include "ServerThread.h"
 #include <QMutexLocker>
 #include "ServerThreadList.h"
+#include "Protocol.h"
+#include "../lib/Version.h"
 
 ServerThread::ServerThread(
 	RuntimeInformationType &rit,
@@ -45,12 +47,16 @@ void ServerThread::run() {
 	if(clientSocket) {
 		connect(clientSocket, &QTcpSocket::readyRead, this, &ServerThread::readyRead);
 		connect(clientSocket, &QTcpSocket::disconnected, this, &ServerThread::disconnected);
+
+		Version version(0, 0, 1);
+		Protocol protocol(version);
+		QByteArray welcomeMessage = protocol.generateWelcomeMessage();
+		qDebug() << "Welcome message:" << welcomeMessage;
+		clientSocket->write(welcomeMessage);
+
+		exec();
 	}
-
-	exec();
-
-	// Quit thread
-	qDebug() << "end";
+	qDebug() << "End Thread";
 }
 
 void ServerThread::setClientSocketDescriptor(const qintptr clientSocketDescriptor) {

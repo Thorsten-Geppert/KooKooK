@@ -35,7 +35,7 @@ Server::Server(
 
 	connect(&userTimer, &QTimer::timeout, this, &Server::userTimeout);
 	userTimer.setInterval(5000);
-	userTimer.start();
+	//userTimer.start();
 }
 
 bool Server::start() {

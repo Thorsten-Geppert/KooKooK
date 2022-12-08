@@ -10,7 +10,7 @@ UserRitTypeDatabaseObjectList::~UserRitTypeDatabaseObjectList() {
 	qDebug() << "called";
 }
 
-bool UserRitTypeDatabaseObjectList::contains(const QString &username) {
+bool UserRitTypeDatabaseObjectList::contains(const QString &username) const {
 	UserRitTypeDatabaseObject *user = nullptr;
 
 	const int counter = count();

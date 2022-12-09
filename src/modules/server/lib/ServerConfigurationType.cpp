@@ -51,3 +51,11 @@ unsigned int ServerConfigurationType::getThreads() const {
 SslConfigurationType &ServerConfigurationType::getSsl() {
 	return sslConfigurationType;
 }
+
+void ServerConfigurationType::setThreadConnections(const unsigned int connections) {
+	this->connections = connections;
+}
+
+unsigned int ServerConfigurationType::getThreadConnections() const {
+	return connections;
+}

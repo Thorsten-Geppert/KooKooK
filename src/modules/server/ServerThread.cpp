@@ -21,51 +21,38 @@ ServerThread::ServerThread(
 	serverThreadList.append(this);
 }
 
-bool ServerThread::initialize(const qintptr clientSocketDescriptor) {
-	setClientSocketDescriptor(clientSocketDescriptor);
+void ServerThread::initialize(const qintptr clientSocketDescriptor) {
+	QSslSocket *clientSocket = new QSslSocket(this);
+	clientSockets.append(clientSocket);
 
-	clientSocket = new QSslSocket(this);
 	connect(clientSocket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
 	if(!clientSocket->setSocketDescriptor(clientSocketDescriptor)) {
 		rit.log(QString("Could not set socket descriptor: %1").arg(clientSocket->errorString()));
+	} else {
+		SslConfigurationType::CacheStruct *cache = &rit.getConfiguration().getServer().getSsl().Cache;
 
-		return false;
-	}
+		clientSocket->setPrivateKey(cache->getKey());
+		clientSocket->setLocalCertificate(cache->getCertificate());
+		clientSocket->setPeerVerifyMode(cache->getVerify());
+		clientSocket->startServerEncryption();
 
-	SslConfigurationType::CacheStruct *cache = &rit.getConfiguration().getServer().getSsl().Cache;
-
-	clientSocket->setPrivateKey(cache->getKey());
-	clientSocket->setLocalCertificate(cache->getCertificate());
-	clientSocket->setPeerVerifyMode(cache->getVerify());
-	clientSocket->startServerEncryption();
-
-	return true;
-}
-
-void ServerThread::run() {
-	if(clientSocket) {
 		connect(clientSocket, &QTcpSocket::readyRead, this, &ServerThread::readyRead);
 		connect(clientSocket, &QTcpSocket::disconnected, this, &ServerThread::disconnected);
 
 		Version version(0, 0, 1);
 		protocol = QSharedPointer<Protocol>(new Protocol(version, *clientSocket));
-
 		protocol->askWelcomeMessage();
-
-		exec();
 	}
+}
+
+void ServerThread::run() {
+	exec();
 	qDebug() << "End Thread";
 }
 
-void ServerThread::setClientSocketDescriptor(const qintptr clientSocketDescriptor) {
-	this->clientSocketDescriptor = clientSocketDescriptor;
-}
-
-qintptr ServerThread::getClientSocketDescriptor() const {
-	return clientSocketDescriptor;
-}
-
 void ServerThread::readyRead() {
+	QSslSocket *clientSocket = qobject_cast<QSslSocket *>(sender());
+
 	QByteArray received = clientSocket->readAll();
 
 	Packet::ErrorType errorType = Packet::ErrorType::NONE;
@@ -88,10 +75,8 @@ void ServerThread::readyRead() {
 
 			if(loginErrorType == Protocol::LoginErrorType::LOGGED_IN && sent) {
 				rit.log(QString("The user '%1' is logged in successfully").arg(username));
-				setLoggedIn(true);
 			} else {
 				rit.log(QString("The user '%1' is not logged in: %2 (Sent: %3)").arg(username, Protocol::loginErrorTypeToString(loginErrorType), sent ? "YES" : "NO"), true);
-				setLoggedIn(false);
 			}
 
 		// Unknown command
@@ -108,6 +93,8 @@ void ServerThread::disconnected() {
 }
 
 void ServerThread::ended() {
+	QSslSocket *clientSocket = qobject_cast<QSslSocket *>(sender());
+	clientSockets.removeAll(clientSocket);
 	QMutexLocker serverThreadMutexLocker(&serverThreadMutex);
 	serverThreadList.removeAll(this);
 
@@ -120,10 +107,6 @@ void ServerThread::sslErrors(const QList<QSslError> &errors) {
 		qDebug() << error.errorString();
 }
 
-void ServerThread::setLoggedIn(const bool loggedIn) {
-	this->loggedIn = loggedIn;
-}
-
-bool ServerThread::isLoggedIn() const {
-	return loggedIn;
+int ServerThread::getSocketCount() const {
+	return clientSockets.count();
 }

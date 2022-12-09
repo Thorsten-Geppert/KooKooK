@@ -15,6 +15,7 @@ class Defaults {
 		static const QString DATABASE_TYPE;
 		static const QStringList DATABASE_TYPES;
 		static const unsigned int THREADS;
+		static const unsigned int THREAD_CONNECTIONS;
 		static const QString SSL_SERVER_CA_FILENAME;
 		static const QString SSL_CLIENT_CA_FILENAME;
 		static const QString SSL_KEY_FILENAME;
@@ -32,6 +33,7 @@ const unsigned long Defaults::WAIT_SECONDS_AFTER_THREAD_SHUTDOWN = 5;
 const QString Defaults::DATABASE_TYPE                            = "SQLite";
 const QStringList Defaults::DATABASE_TYPES                       = QStringList() << "SQLite" << "PostgreSQL" << "MySQL";
 const unsigned int Defaults::THREADS                             = 10;
+const unsigned int Defaults::THREAD_CONNECTIONS                  = 20;
 const QString Defaults::SSL_SERVER_CA_FILENAME                   = "ServerCa.pem";
 const QString Defaults::SSL_CLIENT_CA_FILENAME                   = "ClientCa.pem";
 const QString Defaults::SSL_KEY_FILENAME                         = "ServerKey.key";

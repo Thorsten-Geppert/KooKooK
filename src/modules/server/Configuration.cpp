@@ -46,6 +46,7 @@ Configuration::ErrorEnumeration Configuration::load(QString configurationFilenam
 		server.setPort(settings.value("Server/Port", Defaults::PORT).toUInt());
 		server.setWaitSecondsAfterThreadsShutdown(settings.value("Server/WaitSecondsAfterThreadShutdown", QVariant::fromValue(Defaults::WAIT_SECONDS_AFTER_THREAD_SHUTDOWN)).toUInt());
 		server.setThreads(settings.value("Server/Threads", QVariant::fromValue(Defaults::THREADS)).toUInt());
+		server.setThreadConnections(settings.value("Server/ThreadConnections", QVariant::fromValue(Defaults::THREAD_CONNECTIONS)).toUInt());
 
 		/// SSL
 		auto &ssl = server.getSsl();

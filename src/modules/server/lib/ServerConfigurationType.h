@@ -26,6 +26,9 @@ class ServerConfigurationType : public ConfigurationType {
 		void setThreads(const unsigned int threads);
 		unsigned int getThreads() const;
 
+		void setThreadConnections(const unsigned int connections);
+		unsigned int getThreadConnections() const;
+
 		SslConfigurationType &getSsl();
 	
 	private:
@@ -33,6 +36,7 @@ class ServerConfigurationType : public ConfigurationType {
 		quint16 port = 0;
 		unsigned long waitSecondsAfterThreadsShutdown = 5;
 		unsigned int threads = 10;
+		unsigned int connections = 20;
 
 		SslConfigurationType sslConfigurationType;
 

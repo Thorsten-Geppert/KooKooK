@@ -5,7 +5,9 @@
 #include <QList>
 #include <QSslSocket>
 #include <QSslError>
+#include <QSharedPointer>
 #include "RuntimeInformationType.h"
+#include "Protocol.h"
 
 class ServerThreadList;
 class ServerThread : public QThread {
@@ -32,8 +34,12 @@ class ServerThread : public QThread {
 		qintptr clientSocketDescriptor = -1;
 		QSslSocket *clientSocket = nullptr;
 		RuntimeInformationType &rit;
+		QSharedPointer<Protocol> protocol;
+		bool loggedIn = false;
 
 		void setClientSocketDescriptor(const qintptr clientSocketDescriptor);
+		void setLoggedIn(const bool loggedIn);
+		bool isLoggedIn() const;
 
 	public slots:
 		void readyRead();

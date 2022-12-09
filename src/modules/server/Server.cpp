@@ -34,8 +34,8 @@ Server::Server(
 	connect(termSocketNotifier, SIGNAL(activated(QSocketDescriptor)), this, SLOT(termSignalSlot()));
 
 	connect(&userTimer, &QTimer::timeout, this, &Server::userTimeout);
-	userTimer.setInterval(5000);
-	//userTimer.start();
+	userTimer.setInterval(0);
+	userTimer.start();
 }
 
 bool Server::start() {
@@ -58,25 +58,33 @@ void Server::incomingConnection(qintptr clientSocketDescriptor) {
 }
 
 void Server::userTimeout() {
+	userTimer.stop();
+	userTimer.setInterval(5000);
+
 	UserRitLibraryDatabaseObject userRitLibraryDatabaseObject(rit);
 	QScopedPointer<UserRitTypeDatabaseObjectList> userRitTypeDatabaseObjectList(userRitLibraryDatabaseObject.getAll());
 
 	if(userRitTypeDatabaseObjectList) {
+		auto &userCache = rit.getUserCache();
+
 		UserRitTypeDatabaseObject *user = nullptr;
 		const int count = userRitTypeDatabaseObjectList->count();
 		for(int i = 0; i < count; i++) {
 			user = userRitTypeDatabaseObjectList->value(i);
-			if(user)
-				users[user->getUsername()] = user->getPassword();
+			if(user) {
+				userCache.localData()[user->getUsername()] = user->getPassword();
+			}
 		}
 
-		QHashIterator<QString, QString> iterator(users);
+		QHashIterator<QString, QString> iterator(userCache.localData());
 		while(iterator.hasNext()) {
 			iterator.next();
 			if(!userRitTypeDatabaseObjectList->contains(iterator.key()))
-				users.remove(iterator.key());
+				userCache.localData().remove(iterator.key());
 		}
 	}
+
+	userTimer.start();
 }
 
 void Server::hupSignalHandler(int) {
@@ -95,8 +103,6 @@ void Server::hupSignalSlot() {
 	char tmp;
 	::read(hupSignalFd[1], &tmp, sizeof(tmp));
 
-	qDebug() << "HUP signal";
-
 	hupSocketNotifier->setEnabled(true);
 }
 
@@ -106,7 +112,6 @@ void Server::termSignalSlot() {
 	char tmp;
 	::read(termSignalFd[1], &tmp, sizeof(tmp));
 
-	qDebug() << "TERM signal";
 	stop();
 
 	termSocketNotifier->setEnabled(true);

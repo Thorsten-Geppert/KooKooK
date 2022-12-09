@@ -6,6 +6,17 @@
 class Packet {
 
 	public:
+		typedef enum class ErrorEnumration : unsigned int {
+			NONE = 0,
+			EMPTY,
+			SIZE,
+			SIZE_CONVERT,
+			COMMAND,
+			FORMAT,
+			FIELDS,
+			MALFORMED
+		} ErrorType;
+
 		Packet();
 		Packet(
 			const QString &command,
@@ -51,13 +62,23 @@ class Packet {
 
 		QByteArray toByteArray() const;
 
-		static Packet parse(const QByteArray &packet, bool *ok);
-		bool parse(const QByteArray &packet);
+		static QByteArray getDefaultDelimiter() { return "\t"; }
+
+		static Packet parse(const QByteArray &packet, const QByteArray &delimiter, ErrorType *errorType);
+		ErrorType parse(const QByteArray &packet, const bool setOnError = true);
+
+		void setDelimiter(const QByteArray &delimiter);
+		QByteArray getDelimiter() const;
+		
+		static QString errorTypeToString(const ErrorType &errorType);
+
+		bool isCommand(const QString &command) const;
 	
 	protected:
 		QString command;
 		QString format;
 		uint32_t size = { 0 };
 		QByteArray data;
+		QByteArray delimiter = getDefaultDelimiter();
 
 };

@@ -1,7 +1,6 @@
 #include "ServerThread.h"
 #include <QMutexLocker>
 #include "ServerThreadList.h"
-#include "Protocol.h"
 #include "../lib/Version.h"
 
 ServerThread::ServerThread(
@@ -49,10 +48,9 @@ void ServerThread::run() {
 		connect(clientSocket, &QTcpSocket::disconnected, this, &ServerThread::disconnected);
 
 		Version version(0, 0, 1);
-		Protocol protocol(version);
-		QByteArray welcomeMessage = protocol.generateWelcomeMessage();
-		qDebug() << "Welcome message:" << welcomeMessage;
-		clientSocket->write(welcomeMessage);
+		protocol = QSharedPointer<Protocol>(new Protocol(version, *clientSocket));
+
+		protocol->askWelcomeMessage();
 
 		exec();
 	}
@@ -68,9 +66,41 @@ qintptr ServerThread::getClientSocketDescriptor() const {
 }
 
 void ServerThread::readyRead() {
-	QByteArray data = clientSocket->readAll();
-	qDebug() << data;
-	clientSocket->write(data);
+	QByteArray received = clientSocket->readAll();
+
+	Packet::ErrorType errorType = Packet::ErrorType::NONE;
+
+	Packet packet = Protocol::createPacket(received, &errorType);
+	if(errorType == Packet::ErrorType::NONE) {
+		// Authenticate
+		if(packet.isCommand("Authenticate")) {
+			rit.log("Authenticate initiated");
+
+			bool sent = false;
+			QString username;
+
+			Protocol::LoginErrorType loginErrorType = protocol->endWelcomeMessage(
+				rit.getUserCache(),
+				packet.getData(),
+				sent,
+				&username
+			);
+
+			if(loginErrorType == Protocol::LoginErrorType::LOGGED_IN && sent) {
+				rit.log(QString("The user '%1' is logged in successfully").arg(username));
+				setLoggedIn(true);
+			} else {
+				rit.log(QString("The user '%1' is not logged in: %2 (Sent: %3)").arg(username, Protocol::loginErrorTypeToString(loginErrorType), sent ? "YES" : "NO"), true);
+				setLoggedIn(false);
+			}
+
+		// Unknown command
+		} else {
+			rit.log(QString("Unknown command '%1'").arg(packet.getCommand()), true);
+		}
+	} else {
+		rit.log(QString("Error: %1").arg(Packet::errorTypeToString(errorType)), true);
+	}
 }
 
 void ServerThread::disconnected() {
@@ -88,4 +118,12 @@ void ServerThread::sslErrors(const QList<QSslError> &errors) {
 	qDebug() << "SSL error";
 	foreach (const QSslError &error, errors)
 		qDebug() << error.errorString();
+}
+
+void ServerThread::setLoggedIn(const bool loggedIn) {
+	this->loggedIn = loggedIn;
+}
+
+bool ServerThread::isLoggedIn() const {
+	return loggedIn;
 }

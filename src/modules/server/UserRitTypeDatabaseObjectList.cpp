@@ -1,13 +1,15 @@
 #include "UserRitTypeDatabaseObjectList.h"
 
 UserRitTypeDatabaseObjectList::UserRitTypeDatabaseObjectList(
+	const bool autoClean
 ) : QList<UserRitTypeDatabaseObject *>(
 ) {
+	setAutoClean(autoClean);
 }
 
 UserRitTypeDatabaseObjectList::~UserRitTypeDatabaseObjectList() {
-	qDeleteAll(*this);
-	qDebug() << "called";
+	if(isAutoClean())
+		qDeleteAll(*this);
 }
 
 bool UserRitTypeDatabaseObjectList::contains(const QString &username) const {
@@ -21,4 +23,12 @@ bool UserRitTypeDatabaseObjectList::contains(const QString &username) const {
 	}
 
 	return false;
+}
+
+void UserRitTypeDatabaseObjectList::setAutoClean(const bool autoClean) {
+	this->autoClean = autoClean;
+}
+
+bool UserRitTypeDatabaseObjectList::isAutoClean() const {
+	return autoClean;
 }

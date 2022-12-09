@@ -59,17 +59,6 @@ int main(int argc, char *argv[]) {
 
 	QCoreApplication app(argc, argv);
 
-	Packet packet(
-		"Authenticate",
-		"Text",
-		100,
-		"Data"
-	);
-
-	qDebug() << packet.parse("Authenticate\tText\t143\tdata");
-	qDebug() << packet.toByteArray();
-
-/*
 	RuntimeInformationType rit;
 	Configuration::ErrorEnumeration configurationError = rit.loadConfiguration(argv[1]);
 	if(configurationError == Configuration::ErrorEnumeration::NONE) {
@@ -107,5 +96,5 @@ int main(int argc, char *argv[]) {
 		rit.log(QString("Startup error: Configuration could not be loaded: %1").arg(Configuration::ErrorEnumerationToString(configurationError)));
 	}
 
-	return 2;*/
+	return 2;
 }

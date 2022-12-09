@@ -34,3 +34,7 @@ QSqlDatabase &RuntimeInformationType::getSqlDatabase() {
 QSqlDatabase &RuntimeInformationType::getDb() {
 	return configuration.getSqlDatabase();
 }
+
+RuntimeInformationType::UserCacheType &RuntimeInformationType::getUserCache() {
+	return userCache;
+}

@@ -2,11 +2,6 @@ HEADERS +=	Defaults.h \
 			Server.h \
 			Configuration.h \
 			RuntimeInformationType.h \
-			RitTypeDatabaseObject.h \
-			RitLibraryDatabaseObject.h \
-			UserRitTypeDatabaseObject.h \
-			UserRitLibraryDatabaseObject.h \
-			UserRitTypeDatabaseObjectList.h \
 			Protocol.h \
 			ProtocolList.h \
 			\
@@ -19,9 +14,6 @@ HEADERS +=	Defaults.h \
 			lib/PostgreSQLDatabaseConfigurationType.h \
 			lib/MySQLDatabaseConfigurationType.h \
 			lib/SQLiteDatabaseConfigurationType.h \
-			lib/DatabaseObject.h \
-			lib/LibraryDatabaseObject.h \
-			lib/TypeDatabaseObject.h \
 			\
 			../lib/LogLibrary.h \
 			../lib/SystemLogLibrary.h \
@@ -34,11 +26,6 @@ SOURCES += 	main.cpp \
 			Server.cpp \
 			Configuration.cpp \
 			RuntimeInformationType.cpp \
-			RitTypeDatabaseObject.cpp \
-			RitLibraryDatabaseObject.cpp \
-			UserRitTypeDatabaseObject.cpp \
-			UserRitLibraryDatabaseObject.cpp \
-			UserRitTypeDatabaseObjectList.cpp \
 			Protocol.cpp \
 			ProtocolList.cpp \
 			\
@@ -51,9 +38,6 @@ SOURCES += 	main.cpp \
 			lib/PostgreSQLDatabaseConfigurationType.cpp \
 			lib/MySQLDatabaseConfigurationType.cpp \
 			lib/SQLiteDatabaseConfigurationType.cpp \
-			lib/DatabaseObject.cpp \
-			lib/LibraryDatabaseObject.cpp \
-			lib/TypeDatabaseObject.cpp \
 			\
 			../lib/LogLibrary.cpp \
 			../lib/SystemLogLibrary.cpp \

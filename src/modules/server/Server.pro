@@ -1,8 +1,5 @@
 HEADERS +=	Defaults.h \
 			Server.h \
-			ServerThread.h \
-			ServerThreadList.h \
-			ServerThreadManager.h \
 			Configuration.h \
 			RuntimeInformationType.h \
 			RitTypeDatabaseObject.h \
@@ -11,6 +8,7 @@ HEADERS +=	Defaults.h \
 			UserRitLibraryDatabaseObject.h \
 			UserRitTypeDatabaseObjectList.h \
 			Protocol.h \
+			ProtocolList.h \
 			\
 			lib/ConfigurationType.h \
 			lib/VariantHash.h \
@@ -34,9 +32,6 @@ HEADERS +=	Defaults.h \
 
 SOURCES += 	main.cpp \
 			Server.cpp \
-			ServerThread.cpp \
-			ServerThreadList.cpp \
-			ServerThreadManager.cpp \
 			Configuration.cpp \
 			RuntimeInformationType.cpp \
 			RitTypeDatabaseObject.cpp \
@@ -45,6 +40,7 @@ SOURCES += 	main.cpp \
 			UserRitLibraryDatabaseObject.cpp \
 			UserRitTypeDatabaseObjectList.cpp \
 			Protocol.cpp \
+			ProtocolList.cpp \
 			\
 			lib/ConfigurationType.cpp \
 			lib/VariantHash.cpp \

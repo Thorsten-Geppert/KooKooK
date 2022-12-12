@@ -38,6 +38,8 @@ class Version {
 		QString toString();
 
 		static Version parseVersion(const QString &version, bool &ok);
+
+		Version operator=(const QString &value);
 	
 	private:
 		unsigned int major = { 0 };

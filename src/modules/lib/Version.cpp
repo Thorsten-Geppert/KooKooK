@@ -107,3 +107,7 @@ void Version::set(const Version &version) {
 	setMinor(version.getMinor());
 	setPatch(version.getPatch());
 }
+
+Version Version::operator=(const QString &value) {
+	return Version(value);
+}

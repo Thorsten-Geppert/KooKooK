@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../lib/Version.h"
-#include "../lib/Packet.h"
-#include "RuntimeInformationType.h"
 #include <QSslSocket>
 #include <QUuid>
+#include "RuntimeInformationType.h"
+#include "../lib/Version.h"
+#include "../lib/Packet.h"
 
 class Protocol {
 
@@ -20,18 +20,18 @@ class Protocol {
 			NOT_LOGGED_IN
 		} LoginErrorType;
 
-
 		Protocol(
 			const Version &version,
-			QSslSocket &sslSocket,
+			QSslSocket *sslSocket,
 			QUuid *generatedUuid = nullptr
 		);
+		~Protocol();
 
 		void setVersion(const Version &version);
 		Version getVersion() const;
 		QString getVersionString() const;
 
-		QSslSocket &getSslSocket();
+		QSslSocket *getSslSocket();
 
 		static bool parseAuthenticationString(
 			const QString &authentication,
@@ -76,19 +76,19 @@ class Protocol {
 		);
 
 		static bool sendPacket(
-			QSslSocket &sslSocket,
+			QSslSocket *sslSocket,
 			const Packet &packet
 		);
 
 		static bool sendPacket(
-			QSslSocket &sslSocket,
+			QSslSocket *sslSocket,
 			const QString &command,
 			const QString &format,
 			const QByteArray &data
 		);
 
 		static bool sendPacket(
-			QSslSocket &sslSocket,
+			QSslSocket *sslSocket,
 			const QString &command,
 			const QString &format,
 			const QString &data
@@ -130,6 +130,6 @@ class Protocol {
 	private:
 		Version version;
 		QUuid uuid;
-		QSslSocket &sslSocket;
+		QSslSocket *sslSocket;
 
 };

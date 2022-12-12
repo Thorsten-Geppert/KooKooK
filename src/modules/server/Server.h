@@ -4,10 +4,8 @@
 #include <QSslKey>
 #include <QSslCertificate>
 #include <QSocketNotifier>
-#include "ServerThreadManager.h"
 #include "RuntimeInformationType.h"
-
-#include <QTimer>
+#include "ProtocolList.h"
 
 class Server : public QTcpServer {
 
@@ -20,15 +18,15 @@ class Server : public QTcpServer {
 		);
 
 		bool start();
-		bool stop();
+		void stop();
 		void incomingConnection(qintptr clientSocketDescriptor) override;
 
 		static void hupSignalHandler(int);
 		static void termSignalHandler(int);
 
 	private:
-		ServerThreadManager serverThreadManager;
 		RuntimeInformationType &rit;
+		ProtocolList protocolList;
 
 		QSslKey sslKey;
 		QSslCertificate sslCertificate;
@@ -39,15 +37,13 @@ class Server : public QTcpServer {
 		QSocketNotifier *hupSocketNotifier;
 		QSocketNotifier *termSocketNotifier;
 
-		QTimer userTimer;
-
 	public slots:
 		void hupSignalSlot();
 		void termSignalSlot();
+		void readyRead();
+		void sslErrors(const QList<QSslError> &errors);
+		void disconnected();
 
-	private slots:
-		void userTimeout();
-	
 	signals:
 		void exit(int status);
 

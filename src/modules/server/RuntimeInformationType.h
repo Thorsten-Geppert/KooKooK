@@ -4,13 +4,14 @@
 #include <QThreadStorage>
 #include <QHash>
 #include "Configuration.h"
+#include "../../lib/Version.h"
 
 class RuntimeInformationType {
 
 	public:
 		typedef QThreadStorage<QHash<QString, QString>> UserCacheType;
 
-		RuntimeInformationType();
+		RuntimeInformationType(const Version &version);
 
 		Configuration::ErrorEnumeration loadConfiguration(const QString &configurationFilename);
 		bool log(
@@ -27,10 +28,13 @@ class RuntimeInformationType {
 		QSqlDatabase &getDb(); // Synonym for getSqlDatabase()
 
 		UserCacheType &getUserCache();
+		
+		Version getVersion() const;
 
 	private:
 		Configuration configuration;
 		qint64 pid = 0;
 		UserCacheType userCache;
+		Version version;
 
 };

@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 
 	QCoreApplication app(argc, argv);
 
-	RuntimeInformationType rit;
+	RuntimeInformationType rit(Version("0.0.1"));
 	Configuration::ErrorEnumeration configurationError = rit.loadConfiguration(argv[1]);
 	if(configurationError == Configuration::ErrorEnumeration::NONE) {
 

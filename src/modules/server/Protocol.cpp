@@ -4,7 +4,7 @@
 
 Protocol::Protocol(
 	const Version &version,
-	QSslSocket &sslSocket,
+	QSslSocket *sslSocket,
 	QUuid *generatedUuid
 ) : sslSocket(
 	sslSocket
@@ -13,6 +13,11 @@ Protocol::Protocol(
 	generateAndSetUuid();
 	if(generatedUuid)
 		*generatedUuid = getUuid();
+}
+
+Protocol::~Protocol() {
+	if(sslSocket)
+		delete sslSocket;
 }
 
 void Protocol::setVersion(const Version &version) {
@@ -27,7 +32,7 @@ QString Protocol::getVersionString() const {
 	return getVersion().toString();
 }
 
-QSslSocket &Protocol::getSslSocket() {
+QSslSocket *Protocol::getSslSocket() {
 	return sslSocket;
 }
 
@@ -116,15 +121,18 @@ Packet Protocol::createPacket(
 }
 
 bool Protocol::sendPacket(
-	QSslSocket &sslSocket,
+	QSslSocket *sslSocket,
 	const Packet &packet
 ) {
+	if(!sslSocket)
+		return false;
+
 	const QByteArray packetString = packet.toByteArray();
-	return sslSocket.write(packetString) == packetString.size();
+	return sslSocket->write(packetString) == packetString.size();
 }
 
 bool Protocol::sendPacket(
-	QSslSocket &sslSocket,
+	QSslSocket *sslSocket,
 	const QString &command,
 	const QString &format,
 	const QByteArray &data
@@ -140,7 +148,7 @@ bool Protocol::sendPacket(
 }
 
 bool Protocol::sendPacket(
-	QSslSocket &sslSocket,
+	QSslSocket *sslSocket,
 	const QString &command,
 	const QString &format,
 	const QString &data

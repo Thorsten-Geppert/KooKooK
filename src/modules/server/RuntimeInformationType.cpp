@@ -1,7 +1,9 @@
 #include "RuntimeInformationType.h"
 
 RuntimeInformationType::RuntimeInformationType(
+	const Version &version
 ) {
+	this->version = version;
 }
 
 Configuration::ErrorEnumeration RuntimeInformationType::loadConfiguration(const QString &configurationFilename) {
@@ -37,4 +39,8 @@ QSqlDatabase &RuntimeInformationType::getDb() {
 
 RuntimeInformationType::UserCacheType &RuntimeInformationType::getUserCache() {
 	return userCache;
+}
+
+Version RuntimeInformationType::getVersion() const {
+	return version;
 }

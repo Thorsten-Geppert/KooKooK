@@ -7,13 +7,11 @@ ServerConfigurationType::ServerConfigurationType(
 
 ServerConfigurationType::ServerConfigurationType(
 	const QString &hostname,
-	const quint16 port,
-	const unsigned int threads
+	const quint16 port
 ) : ConfigurationType(
 ) {
 	setHostname(hostname);
 	setPort(port);
-	setThreads(threads);
 }
 
 void ServerConfigurationType::setHostname(const QString &hostname) {
@@ -32,30 +30,6 @@ quint16 ServerConfigurationType::getPort() const {
 	return port;
 }
 
-void ServerConfigurationType::setWaitSecondsAfterThreadsShutdown(const unsigned long waitSecondsAfterThreadsShutdown) {
-	this->waitSecondsAfterThreadsShutdown = waitSecondsAfterThreadsShutdown;
-}
-
-unsigned long ServerConfigurationType::getWaitSecondsAfterThreadsShutdown() const {
-	return waitSecondsAfterThreadsShutdown;
-}
-
-void ServerConfigurationType::setThreads(const unsigned int threads) {
-	this->threads = threads;
-}
-
-unsigned int ServerConfigurationType::getThreads() const {
-	return threads;
-}
-
 SslConfigurationType &ServerConfigurationType::getSsl() {
 	return sslConfigurationType;
-}
-
-void ServerConfigurationType::setThreadConnections(const unsigned int connections) {
-	this->connections = connections;
-}
-
-unsigned int ServerConfigurationType::getThreadConnections() const {
-	return connections;
 }

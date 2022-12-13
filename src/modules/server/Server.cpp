@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "Protocol.h"
+#include "../lib/SslSocket.h"
 
 int Server::hupSignalFd[2] = { 0, 0 };
 int Server::termSignalFd[2] = { 0, 0 };
@@ -16,8 +16,10 @@ Server::Server(
 	parent
 ), rit(
 	rit
-), protocolList(
-	rit.getVersion()
+), serverSslSocketList(
+	rit.getDb(),
+	rit.getVersion(),
+	this
 ) {
 	// Signal handling
 	if(::socketpair(AF_UNIX, SOCK_STREAM, 0, hupSignalFd))
@@ -48,31 +50,24 @@ bool Server::start() {
 	return true;
 }
 
-void Server::incomingConnection(qintptr clientSocketDescriptor) {
-	QSslSocket *clientSocket = new QSslSocket(this);
-	//clientSockets.append(clientSocket);
+void Server::incomingConnection(qintptr serverSocketDescriptor) {
+	ServerSslSocket *serverSocket = serverSslSocketList.add();
 
-	connect(clientSocket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
-	if(!clientSocket->setSocketDescriptor(clientSocketDescriptor)) {
-		rit.log(QString("Could not set socket descriptor: %1").arg(clientSocket->errorString()));
+	connect(serverSocket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
+	if(!serverSocket->setSocketDescriptor(serverSocketDescriptor)) {
+		rit.log(QString("Could not set socket descriptor: %1").arg(serverSocket->errorString()));
 	} else {
 		SslConfigurationType::CacheStruct *cache = &rit.getConfiguration().getServer().getSsl().Cache;
 
-		clientSocket->setPrivateKey(cache->getKey());
-		clientSocket->setLocalCertificate(cache->getCertificate());
-		clientSocket->setPeerVerifyMode(cache->getVerify());
-		clientSocket->startServerEncryption();
+		serverSocket->setPrivateKey(cache->getKey());
+		serverSocket->setLocalCertificate(cache->getCertificate());
+		serverSocket->setPeerVerifyMode(cache->getVerify());
+		serverSocket->startServerEncryption();
 
-		connect(clientSocket, &QTcpSocket::readyRead, this, &Server::readyRead);
-		connect(clientSocket, &QTcpSocket::disconnected, this, &Server::disconnected);
+		connect(serverSocket, &QTcpSocket::readyRead, this, &Server::readyRead);
+		connect(serverSocket, &QTcpSocket::disconnected, this, &Server::disconnected);
 
-		Protocol *protocol = protocolList.createProtocol(clientSocket);
-		if(protocol) {
-			protocol->askWelcomeMessage();
-		} else {
-			// TODO Alles abbrechen
-			rit.log("Could not create protocol by socket", true);
-		}
+		serverSocket->askWelcomeMessage();
 	}
 }
 
@@ -111,13 +106,13 @@ void Server::stop() {
 }
 
 void Server::readyRead() {
-	QSslSocket *clientSocket = qobject_cast<QSslSocket *>(sender());
+	ServerSslSocket *serverSocket = serverSslSocketList.cast(sender());
 
-	QByteArray received = clientSocket->readAll();
+	QByteArray received = serverSocket->readAll();
 
 	Packet::ErrorType errorType = Packet::ErrorType::NONE;
 
-	Packet packet = Protocol::createPacket(received, &errorType);
+	Packet packet = SslSocket::createPacket(received, &errorType);
 	if(errorType == Packet::ErrorType::NONE) {
 		// Authenticate
 		if(packet.isCommand("Authenticate")) {
@@ -126,23 +121,17 @@ void Server::readyRead() {
 			bool sent = false;
 			QString username;
 
-			Protocol *protocol = protocolList.getProtocol(clientSocket);
 			// TODO Alles abbrechen
-			if(protocol) {
-				Protocol::LoginErrorType loginErrorType = protocol->endWelcomeMessage(
-					rit.getUserCache(),
-					packet.getData(),
-					sent,
-					&username
-				);
+			ServerSslSocket::LoginErrorType loginErrorType = serverSocket->endWelcomeMessage(
+				packet.getData(),
+				sent,
+				&username
+			);
 
-				if(loginErrorType == Protocol::LoginErrorType::LOGGED_IN && sent) {
-					rit.log(QString("The user '%1' is logged in successfully").arg(username));
-				} else {
-					rit.log(QString("The user '%1' is not logged in: %2 (Sent: %3)").arg(username, Protocol::loginErrorTypeToString(loginErrorType), sent ? "YES" : "NO"), true);
-				}
+			if(loginErrorType == ServerSslSocket::LoginErrorType::LOGGED_IN && sent) {
+				rit.log(QString("The user '%1' is logged in successfully").arg(username));
 			} else {
-				rit.log("Could not find protocol by socket", true);
+				rit.log(QString("The user '%1' is not logged in: %2 (Sent: %3)").arg(username, SslSocket::loginErrorTypeToString(loginErrorType), sent ? "YES" : "NO"), true);
 			}
 
 		// Unknown command

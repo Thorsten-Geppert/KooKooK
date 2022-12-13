@@ -2,11 +2,12 @@
 
 #include <QSslSocket>
 #include <QUuid>
-#include "RuntimeInformationType.h"
-#include "../lib/Version.h"
-#include "../lib/Packet.h"
+#include "Version.h"
+#include "Packet.h"
 
-class Protocol {
+class SslSocket : public QSslSocket {
+	
+	Q_OBJECT
 
 	public:
 		typedef enum class LoginErrorEnumration : unsigned int {
@@ -20,28 +21,18 @@ class Protocol {
 			NOT_LOGGED_IN
 		} LoginErrorType;
 
-		Protocol(
-			const Version &version,
-			QSslSocket *sslSocket,
-			QUuid *generatedUuid = nullptr
+		SslSocket(
+			QObject *parent = nullptr
 		);
-		~Protocol();
+		SslSocket(
+			const Version &version,
+			QObject *parent = nullptr
+		);
 
 		void setVersion(const Version &version);
 		Version getVersion() const;
-		QString getVersionString() const;
 
-		QSslSocket *getSslSocket();
-
-		static bool parseAuthenticationString(
-			const QString &authentication,
-			Version &version,
-			QUuid &uuid
-		);
-
-		bool parseAuthenticationString(
-			const QString &authentication
-		);
+		QUuid getUuid() const;
 
 		static QByteArray hash(
 			const QString &username,
@@ -54,16 +45,8 @@ class Protocol {
 			const QString &password
 		);
 
-		void setUuid(const QUuid &uuid);
-		QUuid getUuid() const;
 		QUuid generateAndSetUuid();
 		static QUuid generateUuid();
-
-		static QByteArray generateWelcomeMessage(
-			Version version,
-			QUuid uuid
-		);
-		QByteArray generateWelcomeMessage() const;
 
 		static Packet createPacket(
 			const QString &command,
@@ -106,30 +89,12 @@ class Protocol {
 			const QString &data
 		);
 
-		bool askWelcomeMessage();
-		bool answerWelcomeMessage(
-			const QUuid &uuid,
-			const QString &username,
-			const QString &password
-		);
-		LoginErrorType endWelcomeMessage(
-			RuntimeInformationType::UserCacheType &userCache,
-			const QByteArray &message,
-			bool &sent,
-			QString *username = nullptr
-		);
-
-		static bool parseAuthenticationString(
-			const QByteArray &message,
-			QString &username,
-			QByteArray &hash
-		);
-
 		static QString loginErrorTypeToString(const LoginErrorType &errorType);
 
-	private:
+	protected:
 		Version version;
 		QUuid uuid;
-		QSslSocket *sslSocket;
+
+		void setUuid(const QUuid &uuid);
 
 };

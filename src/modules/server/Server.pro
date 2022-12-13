@@ -2,8 +2,6 @@ HEADERS +=	Defaults.h \
 			Server.h \
 			Configuration.h \
 			RuntimeInformationType.h \
-			Protocol.h \
-			ProtocolList.h \
 			\
 			lib/ConfigurationType.h \
 			lib/VariantHash.h \
@@ -20,14 +18,16 @@ HEADERS +=	Defaults.h \
 			../lib/TextLogLibrary.h \
 			../lib/ConsoleLogLibrary.h \
 			../lib/Version.h \
-			../lib/Packet.h
+			../lib/Packet.h \
+			../lib/SslSocket.h \
+			../lib/ServerSslSocket.h \
+			../lib/ServerSslSocketList.h \
+			../lib/DatabaseLibrary.h
 
 SOURCES += 	main.cpp \
 			Server.cpp \
 			Configuration.cpp \
 			RuntimeInformationType.cpp \
-			Protocol.cpp \
-			ProtocolList.cpp \
 			\
 			lib/ConfigurationType.cpp \
 			lib/VariantHash.cpp \
@@ -44,7 +44,11 @@ SOURCES += 	main.cpp \
 			../lib/TextLogLibrary.cpp \
 			../lib/ConsoleLogLibrary.cpp \
 			../lib/Version.cpp \
-			../lib/Packet.cpp
+			../lib/Packet.cpp \
+			../lib/SslSocket.cpp \
+			../lib/ServerSslSocket.cpp \
+			../lib/ServerSslSocketList.cpp \
+			../lib/DatabaseLibrary.cpp
 
 RESOURCES = Server.qrc
 

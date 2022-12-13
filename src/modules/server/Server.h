@@ -5,7 +5,7 @@
 #include <QSslCertificate>
 #include <QSocketNotifier>
 #include "RuntimeInformationType.h"
-#include "ProtocolList.h"
+#include "../lib/ServerSslSocketList.h"
 
 class Server : public QTcpServer {
 
@@ -19,14 +19,15 @@ class Server : public QTcpServer {
 
 		bool start();
 		void stop();
-		void incomingConnection(qintptr clientSocketDescriptor) override;
+		void incomingConnection(qintptr serverSocketDescriptor) override;
 
 		static void hupSignalHandler(int);
 		static void termSignalHandler(int);
 
 	private:
 		RuntimeInformationType &rit;
-		ProtocolList protocolList;
+
+		ServerSslSocketList serverSslSocketList;
 
 		QSslKey sslKey;
 		QSslCertificate sslCertificate;

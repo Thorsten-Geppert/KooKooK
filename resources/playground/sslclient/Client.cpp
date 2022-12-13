@@ -7,7 +7,6 @@
 #include "Configuration.h"
 #include "../../../src/modules/lib/Version.h"
 #include "../../../src/modules/lib/Packet.h"
-#include "../../../src/modules/server/Protocol.h"
 
 Client::Client() {
 	QSslCertificate sslCertificate;
@@ -65,12 +64,11 @@ void Client::readyRead() {
 			Version version;
 			QUuid uuid;
 
-			if(Protocol::parseAuthenticationString(packet.getData(), version, uuid)) {
+			if(ClientSslSocket::parseAuthenticationString(packet.getData(), version, uuid)) {
 				qDebug() << "Version:" << version.toString();
 				qDebug() << "UUID:" << uuid.toString();
 
-				Protocol protocol(version, clientSocket);
-				if(protocol.answerWelcomeMessage(uuid, "user2", "password2")) {
+				if(clientSocket.answerWelcomeMessage(uuid, "user2", "password2")) {
 					qDebug() << "Send welcome message is ok";
 				} else {
 					qDebug() << "Send welcome message is not ok";

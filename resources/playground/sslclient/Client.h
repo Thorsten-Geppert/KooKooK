@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QSslSocket>
+#include "../../../src/modules/lib/ClientSslSocket.h"
 
 class Client : public QObject {
 
@@ -12,7 +13,7 @@ class Client : public QObject {
 		bool connectToServer();
 
 	private:
-		QSslSocket clientSocket;
+		ClientSslSocket clientSocket;
 
 	private slots:
 		void sslErrors(const QList<QSslError> &errors);

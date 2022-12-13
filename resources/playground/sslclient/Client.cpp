@@ -12,7 +12,6 @@ Client::Client() {
 }
 
 bool Client::connectToServer(const int count) {
-
 	QSslCertificate sslCertificate;
 	QFile certificateFile(CA_CERTIFICATE);
 	if(certificateFile.open(QIODevice::ReadOnly)) {
@@ -25,7 +24,6 @@ bool Client::connectToServer(const int count) {
 	QSslConfiguration sslConfiguration = QSslConfiguration::defaultConfiguration();
 	sslConfiguration.addCaCertificates(QList<QSslCertificate>() << sslCertificate);
 	QSslConfiguration::setDefaultConfiguration(sslConfiguration);
-
 
 	for(int i = 0; i < count; i++) {
 		ClientSslSocket *clientSocket = new ClientSslSocket(this);

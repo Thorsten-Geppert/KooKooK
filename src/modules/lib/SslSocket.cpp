@@ -1,5 +1,4 @@
 #include "SslSocket.h"
-#include "DatabaseLibrary.h"
 
 SslSocket::SslSocket(
 	QObject *parent

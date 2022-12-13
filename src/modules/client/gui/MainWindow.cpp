@@ -9,19 +9,12 @@ MainWindow::MainWindow(
 	new Ui::MainWindow
 ) {
 	ui->setupUi(this);
+	
+	loginWidget = new LoginWidget(this);
+	setCentralWidget(loginWidget);
 }
 
 MainWindow::~MainWindow() {
 	delete ui;
-}
-
-
-void MainWindow::on_loginPushButton_clicked() {
-    
-}
-
-
-void MainWindow::on_logoutPushButton_clicked() {
-    
 }
 

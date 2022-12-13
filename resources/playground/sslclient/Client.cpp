@@ -9,6 +9,10 @@
 #include "../../../src/modules/lib/Packet.h"
 
 Client::Client() {
+}
+
+bool Client::connectToServer(const int count) {
+
 	QSslCertificate sslCertificate;
 	QFile certificateFile(CA_CERTIFICATE);
 	if(certificateFile.open(QIODevice::ReadOnly)) {
@@ -22,24 +26,28 @@ Client::Client() {
 	sslConfiguration.addCaCertificates(QList<QSslCertificate>() << sslCertificate);
 	QSslConfiguration::setDefaultConfiguration(sslConfiguration);
 
-	connect(&clientSocket, &QSslSocket::readyRead, this, &Client::readyRead);
-	connect(&clientSocket, &QSslSocket::disconnected, this, &Client::disconnect);
-	connect(&clientSocket, &QSslSocket::sslErrors, this, &Client::sslErrors);
 
-	clientSocket.setPrivateKey(PRIVATE_KEY);
-	clientSocket.setLocalCertificate(LOCALE_CERTIFICATE);
+	for(int i = 0; i < count; i++) {
+		ClientSslSocket *clientSocket = new ClientSslSocket(this);
 
-	clientSocket.setPeerVerifyMode(VERIFY ? QSslSocket::VerifyPeer: QSslSocket::VerifyNone);
-}
+		connect(clientSocket, &QSslSocket::readyRead, this, &Client::readyRead);
+		connect(clientSocket, &QSslSocket::disconnected, this, &Client::disconnect);
+		connect(clientSocket, &QSslSocket::sslErrors, this, &Client::sslErrors);
 
-bool Client::connectToServer() {
-	clientSocket.connectToHostEncrypted(HOSTNAME, PORT);
+		clientSocket->setPrivateKey(PRIVATE_KEY);
+		clientSocket->setLocalCertificate(LOCALE_CERTIFICATE);
 
-	if(clientSocket.waitForEncrypted(10000)) {
-		return true;
+		clientSocket->setPeerVerifyMode(VERIFY ? QSslSocket::VerifyPeer: QSslSocket::VerifyNone);
+
+		clientSocket->connectToHostEncrypted(HOSTNAME, PORT);
+		if(clientSocket->waitForEncrypted(10000)) {
+			qDebug() << "Connected" << i;
+		} else {
+			qDebug() << "Not connected" << i;
+		}
 	}
 
-	return false;
+	return true;
 }
 
 void Client::sslErrors(const QList<QSslError> &errors) {
@@ -53,7 +61,9 @@ void Client::disconnect() {
 }
 
 void Client::readyRead() {
-	const QByteArray received = clientSocket.readAll();
+	ClientSslSocket *clientSocket = qobject_cast<ClientSslSocket *>(sender());
+
+	const QByteArray received = clientSocket->readAll();
 
 	Packet packet;
 	const Packet::ErrorType errorType = packet.parse(received);
@@ -68,7 +78,7 @@ void Client::readyRead() {
 				qDebug() << "Version:" << version.toString();
 				qDebug() << "UUID:" << uuid.toString();
 
-				if(clientSocket.answerWelcomeMessage(uuid, "user2", "password2")) {
+				if(clientSocket->answerWelcomeMessage(uuid, "user2", "password2")) {
 					qDebug() << "Send welcome message is ok";
 				} else {
 					qDebug() << "Send welcome message is not ok";

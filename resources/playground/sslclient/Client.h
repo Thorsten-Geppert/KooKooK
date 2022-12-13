@@ -10,10 +10,7 @@ class Client : public QObject {
 	public:
 		Client();
 
-		bool connectToServer();
-
-	private:
-		ClientSslSocket clientSocket;
+		bool connectToServer(const int count = 1);
 
 	private slots:
 		void sslErrors(const QList<QSslError> &errors);
